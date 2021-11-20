@@ -1,0 +1,5 @@
+{
+    "dotnet-test-explorer.testArguments": "/p:CollectCoverage=true /p:CoverletOutputFormat=lcov",
+    "coverage-gutters.showLineCoverage": true,
+    "coverage-gutters.lcovname": "coverage.info"
+}
