@@ -10,9 +10,9 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/ChakraCore.net.Test/bin/Debug/net5.0/ChakraCore.Net.Test.dll",
+            "program": "${workspaceFolder}/CCore.Net.Test/bin/Debug/net5.0/CCore.Net.Test.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/ChakraCore.net.Test",
+            "cwd": "${workspaceFolder}/CCore.Net.Test",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
             "console": "internalConsole",
             "stopAtEntry": false
