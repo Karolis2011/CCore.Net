@@ -1,9 +1,9 @@
-﻿using CCore.Net;
-using CCore.Netged;
+﻿using CCore.Net.JsRt;
+using CCore.Net.Managed;
 using Xunit;
 using FluentAssertions;
-using CCore.Net.Runtimes.Fixtures;
-using CCore.Netimes;
+using CCore.Net.Runtimes;
+using CCore.Net.Test.Runtimes.Fixtures;
 
 namespace CCore.Net.Wrapper
 {

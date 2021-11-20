@@ -1,7 +1,7 @@
-﻿using CCore.Net;
+﻿using CCore.Net.JsRt;
 using System;
 
-namespace CCore.Netged
+namespace CCore.Net.Managed
 {
     public class JsNumber : JsValue
     {

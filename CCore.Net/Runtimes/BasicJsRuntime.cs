@@ -1,10 +1,9 @@
-﻿using CCore.Net;
-using CCore.Netged;
+﻿using CCore.Net.JsRt;
+using CCore.Net.Managed;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace CCore.Netimes
+namespace CCore.Net.Runtimes
 {
     public class BasicJsRuntime : IDisposable, IJsRuntime
     {

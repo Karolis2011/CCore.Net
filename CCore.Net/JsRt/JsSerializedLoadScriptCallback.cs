@@ -1,4 +1,4 @@
-﻿namespace CCore.Net
+﻿namespace CCore.Net.JsRt
 {
     /// <summary>
     ///     Called by the runtime to load the source code of the serialized script.

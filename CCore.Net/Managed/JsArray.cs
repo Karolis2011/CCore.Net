@@ -1,9 +1,7 @@
-﻿using CCore.Net;
+﻿using CCore.Net.JsRt;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace CCore.Netged
+namespace CCore.Net.Managed
 {
     public class JsArray : JsObject
     {

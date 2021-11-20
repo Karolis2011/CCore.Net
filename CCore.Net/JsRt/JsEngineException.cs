@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace CCore.Net
+namespace CCore.Net.JsRt
 {
     /// <summary>
     ///     An exception that occurred in the workings of the JavaScript engine itself.

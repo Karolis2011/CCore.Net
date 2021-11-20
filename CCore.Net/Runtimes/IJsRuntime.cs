@@ -1,10 +1,7 @@
-﻿using CCore.Net;
-using CCore.Netged;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using CCore.Net.JsRt;
+using CCore.Net.Managed;
 
-namespace CCore.Netimes
+namespace CCore.Net.Runtimes
 {
     public interface IJsRuntime
     {
