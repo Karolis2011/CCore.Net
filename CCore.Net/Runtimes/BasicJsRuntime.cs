@@ -62,6 +62,11 @@ namespace CCore.Net.Runtimes
             }
         }
 
+        public virtual void SetException(JsValueRef error)
+        {
+            JsContext.SetException(error);
+        }
+
         ~BasicJsRuntime()
         {
             Dispose(disposing: false);

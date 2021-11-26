@@ -168,13 +168,6 @@ namespace CCore.Net.JsRt
         internal static extern JsErrorCode JsIdle(out uint nextIdleTick);
 
 
-
-        [DllImport(DllName, CharSet = CharSet.Unicode)]
-        internal static extern JsErrorCode JsGetPropertyIdFromName(string name, out JsPropertyId propertyId);
-
-        [DllImport(DllName, CharSet = CharSet.Unicode)]
-        internal static extern JsErrorCode JsGetPropertyNameFromId(JsPropertyId propertyId, out string name);
-
         [DllImport(DllName)]
         internal static extern JsErrorCode JsGetUndefinedValue(out JsValueRef undefinedValue);
 
@@ -248,25 +241,7 @@ namespace CCore.Net.JsRt
         internal static extern JsErrorCode JsPreventExtension(JsValueRef obj);
 
         [DllImport(DllName)]
-        internal static extern JsErrorCode JsGetProperty(JsValueRef obj, JsPropertyId propertyId, out JsValueRef value);
-
-        [DllImport(DllName)]
-        internal static extern JsErrorCode JsGetOwnPropertyDescriptor(JsValueRef obj, JsPropertyId propertyId, out JsValueRef propertyDescriptor);
-
-        [DllImport(DllName)]
         internal static extern JsErrorCode JsGetOwnPropertyNames(JsValueRef obj, out JsValueRef propertyNames);
-
-        [DllImport(DllName)]
-        internal static extern JsErrorCode JsSetProperty(JsValueRef obj, JsPropertyId propertyId, JsValueRef value, bool useStrictRules);
-
-        [DllImport(DllName)]
-        internal static extern JsErrorCode JsHasProperty(JsValueRef obj, JsPropertyId propertyId, out bool hasProperty);
-
-        [DllImport(DllName)]
-        internal static extern JsErrorCode JsDeleteProperty(JsValueRef obj, JsPropertyId propertyId, bool useStrictRules, out JsValueRef result);
-
-        [DllImport(DllName)]
-        internal static extern JsErrorCode JsDefineProperty(JsValueRef obj, JsPropertyId propertyId, JsValueRef propertyDescriptor, out bool result);
 
         [DllImport(DllName)]
         internal static extern JsErrorCode JsHasIndexedProperty(JsValueRef obj, JsValueRef index, out bool result);
@@ -369,16 +344,7 @@ namespace CCore.Net.JsRt
         internal static extern JsErrorCode JsGetDataViewStorage(JsValueRef dataView, out IntPtr buffer, out uint bufferLength);
 
         [DllImport(DllName)]
-        internal static extern JsErrorCode JsGetPropertyIdType(JsPropertyId propertyId, out JsPropertyIdType propertyIdType);
-
-        [DllImport(DllName)]
         internal static extern JsErrorCode JsCreateSymbol(JsValueRef description, out JsValueRef symbol);
-
-        [DllImport(DllName)]
-        internal static extern JsErrorCode JsGetSymbolFromPropertyId(JsPropertyId propertyId, out JsValueRef symbol);
-
-        [DllImport(DllName)]
-        internal static extern JsErrorCode JsGetPropertyIdFromSymbol(JsValueRef symbol, out JsPropertyId propertyId);
 
         [DllImport(DllName)]
         internal static extern JsErrorCode JsGetOwnPropertySymbols(JsValueRef obj, out JsValueRef propertySymbols);
@@ -435,6 +401,23 @@ namespace CCore.Net.JsRt
 
         [DllImport(DllName)]
         internal static extern JsErrorCode JsRun(JsValueRef script, JsSourceContext sourceContext, JsValueRef sourceUrl, JsParseScriptAttributes parseAttributes, out JsValueRef result);
+
+        /// <summary>
+        ///     Defines a new object's own property from a property descriptor.
+        /// </summary>
+        /// <remarks>
+        ///     Requires an active script context.
+        /// </remarks>
+        /// <param name="obj">The object that has the property.</param>
+        /// <param name="key">The key (JavascriptString or JavascriptSymbol) to the property.</param>
+        /// <param name="propertyDescriptor">The property descriptor.</param>
+        /// <param name="result">Whether the property was defined.</param>
+        /// <returns>
+        ///     The code <c>JsNoError</c> if the operation succeeded, a failure code otherwise.
+        /// </returns>
+        [DllImport(DllName)]
+        internal static extern JsErrorCode JsObjectDefineProperty(JsValueRef obj, JsValueRef key, JsValueRef propertyDescriptor, out bool result);
+
 
         /// <summary>
         ///     Starts debugging in the given runtime.

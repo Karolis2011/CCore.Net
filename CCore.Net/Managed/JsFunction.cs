@@ -8,6 +8,8 @@ namespace CCore.Net.Managed
     {
         public static new bool isSupported(JsValueType type, JsValueRef value) => type == JsValueType.Function;
 
+        protected JsFunction() : base() { }
+
         public JsFunction(JsValueRef jsValue)
         {
             if (!jsValue.IsValid)

@@ -739,19 +739,6 @@ namespace CCore.Net.JsRt
             Native.ThrowIfError(Native.JsPreventExtension(this));
         }
 
-        /// <summary>
-        ///     Gets a property descriptor for an object's own property.
-        /// </summary>
-        /// <remarks>
-        ///     Requires an active script context.
-        /// </remarks>
-        /// <param name="propertyId">The ID of the property.</param>
-        /// <returns>The property descriptor.</returns>
-        public JsValueRef GetOwnPropertyDescriptor(JsPropertyId propertyId)
-        {
-            Native.ThrowIfError(Native.JsGetOwnPropertyDescriptor(this, propertyId, out JsValueRef descriptorReference));
-            return descriptorReference;
-        }
 
         /// <summary>
         ///     Gets the list of all properties on the object.
@@ -764,119 +751,6 @@ namespace CCore.Net.JsRt
         {
             Native.ThrowIfError(Native.JsGetOwnPropertyNames(this, out JsValueRef propertyNamesReference));
             return propertyNamesReference;
-        }
-
-        /// <summary>
-        ///     Determines whether an object has a property.
-        /// </summary>
-        /// <remarks>
-        ///     Requires an active script context.
-        /// </remarks>
-        /// <param name="propertyId">The ID of the property.</param>
-        /// <returns>Whether the object (or a prototype) has the property.</returns>
-        public bool HasProperty(JsPropertyId propertyId)
-        {
-            Native.ThrowIfError(Native.JsHasProperty(this, propertyId, out bool hasProperty));
-            return hasProperty;
-        }
-
-        /// <summary>
-        ///     Gets an object's property.
-        /// </summary>
-        /// <remarks>
-        ///     Requires an active script context.
-        /// </remarks>
-        /// <param name="id">The ID of the property.</param>
-        /// <returns>The value of the property.</returns>
-        public JsValueRef GetProperty(JsPropertyId id)
-        {
-            Native.ThrowIfError(Native.JsGetProperty(this, id, out JsValueRef propertyReference));
-            return propertyReference;
-        }
-
-        /// <summary>
-        ///     Gets an object's property.
-        /// </summary>
-        /// <remarks>
-        ///     Requires an active script context.
-        /// </remarks>
-        /// <param name="id">The ID of the property.</param>
-        /// <returns>The value of the property.</returns>
-        public JsValueRef GetProperty(string id)
-        {
-            return GetProperty(JsPropertyId.FromString(id));
-        }
-
-        /// <summary>
-        ///     Sets an object's property.
-        /// </summary>
-        /// <remarks>
-        ///     Requires an active script context.
-        /// </remarks>
-        /// <param name="id">The ID of the property.</param>
-        /// <param name="value">The new value of the property.</param>
-        /// <param name="useStrictRules">The property set should follow strict mode rules.</param>
-        public void SetProperty(JsPropertyId id, JsValueRef value, bool useStrictRules)
-        {
-            Native.ThrowIfError(Native.JsSetProperty(this, id, value, useStrictRules));
-        }
-
-        /// <summary>
-        ///     Sets an object's property.
-        /// </summary>
-        /// <remarks>
-        ///     Requires an active script context.
-        /// </remarks>
-        /// <param name="id">The ID of the property.</param>
-        /// <param name="value">The new value of the property.</param>
-        /// <param name="useStrictRules">The property set should follow strict mode rules.</param>
-        public void SetProperty(string id, JsValueRef value, bool useStrictRules)
-        {
-            SetProperty(JsPropertyId.FromString(id), value, useStrictRules);
-        }
-
-        /// <summary>
-        ///     Deletes an object's property.
-        /// </summary>
-        /// <remarks>
-        ///     Requires an active script context.
-        /// </remarks>
-        /// <param name="propertyId">The ID of the property.</param>
-        /// <param name="useStrictRules">The property set should follow strict mode rules.</param>
-        /// <returns>Whether the property was deleted.</returns>
-        public JsValueRef DeleteProperty(JsPropertyId propertyId, bool useStrictRules)
-        {
-            Native.ThrowIfError(Native.JsDeleteProperty(this, propertyId, useStrictRules, out JsValueRef returnReference));
-            return returnReference;
-        }
-
-        /// <summary>
-        ///     Defines a new object's own property from a property descriptor.
-        /// </summary>
-        /// <remarks>
-        ///     Requires an active script context.
-        /// </remarks>
-        /// <param name="propertyId">The ID of the property.</param>
-        /// <param name="propertyDescriptor">The property descriptor.</param>
-        /// <returns>Whether the property was defined.</returns>
-        public bool DefineProperty(JsPropertyId propertyId, JsValueRef propertyDescriptor)
-        {
-            Native.ThrowIfError(Native.JsDefineProperty(this, propertyId, propertyDescriptor, out bool result));
-            return result;
-        }
-
-        /// <summary>
-        ///     Defines a new object's own property from a property descriptor.
-        /// </summary>
-        /// <remarks>
-        ///     Requires an active script context.
-        /// </remarks>
-        /// <param name="propertyId">The ID of the property.</param>
-        /// <param name="propertyDescriptor">The property descriptor.</param>
-        /// <returns>Whether the property was defined.</returns>
-        public bool DefineProperty(string propertyId, JsValueRef propertyDescriptor)
-        {
-            return DefineProperty(JsPropertyId.FromString(propertyId), propertyDescriptor);
         }
 
         /// <summary>
@@ -1021,16 +895,31 @@ namespace CCore.Net.JsRt
             return returnReference;
         }
 
-
-        public static Func<JsValueRef, string> JsonStringify()
+        /// <summary>
+        ///     Defines a new object's own property from a property descriptor.
+        /// </summary>
+        /// <remarks>
+        ///     Requires an active script context.
+        /// </remarks>
+        /// <param name="key">The key (JavascriptString or JavascriptSymbol) to the property.</param>
+        /// <param name="propertyDescriptor">The property descriptor.</param>
+        /// <returns>Whether the property was defined.</returns>
+        public bool ObjectDefineProperty(JsValueRef key, JsValueRef propertyDescriptor)
         {
-            var glob = GlobalObject;
-            var func = glob.GetProperty("JSON").GetProperty("stringify");
-            return (val) =>
-            {
-                var res = func.CallFunction(glob, val);
-                return res.ToString();
-            };
+            Native.ThrowIfError(Native.JsObjectDefineProperty(this, key, propertyDescriptor, out bool result));
+            return result;
         }
+
+
+        //public static Func<JsValueRef, string> JsonStringify()
+        //{
+        //    var glob = GlobalObject;
+        //    var func = glob.GetProperty("JSON").GetProperty("stringify");
+        //    return (val) =>
+        //    {
+        //        var res = func.CallFunction(glob, val);
+        //        return res.ToString();
+        //    };
+        //}
     }
 }

@@ -47,17 +47,17 @@ namespace CCore.Net.JsRt
                 //var full = st(error);
                 var names = error.GetOwnPropertyNames();
                 //var namesStr = st(names);
-                var includes = names.GetProperty("includes");
+                var includes = names.GetIndexedProperty(JsValueRef.From("includes"));
                 // {"description":"Expected ';'","message":"Expected ';'","line":5,"column":5,"length":4,"source":"This will error","url":""}
                 if (includes.CallFunction(names, JsValueRef.From("line")).ToBoolean())
                 {
-                    var line = error.GetProperty("line").ToInt32();
-                    var col = error.GetProperty("column").ToInt32();
+                    var line = error.GetIndexedProperty(JsValueRef.From("line")).ToInt32();
+                    var col = error.GetIndexedProperty(JsValueRef.From("column")).ToInt32();
                     lineInfo = $" ({line + 1}, {col + 1})";
                 }
                 if (includes.CallFunction(names, JsValueRef.From("stack")).ToBoolean())
                 {
-                    var a = error.GetProperty("stack");
+                    var a = error.GetIndexedProperty(JsValueRef.From("stack"));
                     if (a.ValueType == JsValueType.String)
                     {
                         extendedMessage = a.ToString();
@@ -66,7 +66,7 @@ namespace CCore.Net.JsRt
                 }
                 else
                 {
-                    var toString = error.GetProperty("toString");
+                    var toString = error.GetIndexedProperty(JsValueRef.From("toString"));
                     extendedMessage = toString.CallFunction(error).ToString();
                 }
 

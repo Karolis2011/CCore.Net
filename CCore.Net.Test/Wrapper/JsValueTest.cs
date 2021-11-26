@@ -24,7 +24,7 @@ namespace CCore.Net.Test.Wrapper
             using var s = new BasicJsRuntime.Scope(fixture.Runtime);
 
             var five = JsContext.RunScript("5");
-            var num = JsValue.FromRaw(five);
+            var num = JsTypeMapper.FromRaw(five);
 
             five.ValueType.Should().Be(JsValueType.Number);
             five.ToInt32().Should().Be(5);

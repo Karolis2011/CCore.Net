@@ -6,6 +6,8 @@ namespace CCore.Net.Managed
 {
     public class JsValue : IDisposable
     {
+        internal const string ExternalObjectPropertyName = "_cctm_externalObject";
+
         internal JsValueRef jsValueRef;
         protected bool refed;
         internal BasicJsRuntime runtime;
@@ -13,44 +15,6 @@ namespace CCore.Net.Managed
         private bool disposedValue;
 
         public static bool isSupported(JsValueType type, JsValueRef value) => value.IsValid;
-
-        public static JsValue FromRaw(JsValueRef jsValue)
-        {
-            if (!jsValue.IsValid)
-                throw new Exception("Indalid value");
-            var type = jsValue.ValueType;
-            switch (type)
-            {
-                case JsValueType.Undefined:
-                    return new JsUndefined(jsValue);
-                case JsValueType.Null:
-                    return new JsNull(jsValue);
-                case JsValueType.Number:
-                    return new JsNumber(jsValue);
-                case JsValueType.String:
-                    return new JsString(jsValue);
-                case JsValueType.Boolean:
-                    return new JsBool(jsValue);
-                case JsValueType.Object:
-                    return new JsObject(jsValue);
-                case JsValueType.Function:
-                    return new JsFunction(jsValue);
-                case JsValueType.Error:
-                    return new JsObject(jsValue);
-                case JsValueType.Array:
-                    return new JsArray(jsValue);
-                case JsValueType.Symbol:
-                case JsValueType.ArrayBuffer:
-                case JsValueType.TypedArray:
-                case JsValueType.DataView:
-                    return new JsObject(jsValue); // They are close enougth to objects
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-            throw new NotImplementedException("Unsupported value");
-        }
-
-
 
         protected JsValue()
         {
@@ -91,6 +55,27 @@ namespace CCore.Net.Managed
             }
         }
 
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+            {
+                return false;
+            }
+
+            if(obj is JsValue jsValue)
+            {
+                return jsValueRef.Equals(jsValue.jsValueRef);
+            }
+            return false;
+        }
+
+        public bool StrictEquals(JsValue obj)
+        {
+            return jsValueRef.StrictEquals(obj.jsValueRef);
+        } 
+
+        public override int GetHashCode() => jsValueRef.GetHashCode();
+
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
@@ -129,7 +114,7 @@ namespace CCore.Net.Managed
         }
 
         public static implicit operator JsValueRef(JsValue value) => value.jsValueRef;
-        public static explicit operator JsValue(JsValueRef v) => FromRaw(v);
+        public static explicit operator JsValue(JsValueRef v) => JsTypeMapper.FromRaw(v);
 
 
         public JsString ConvertToString() => new JsString(jsValueRef.ConvertToString());

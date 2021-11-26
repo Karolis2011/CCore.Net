@@ -35,7 +35,7 @@ namespace CCore.Net.Wrapper
 
             JsObject.isSupported(obj.ValueType, obj).Should().BeTrue();
 
-            var managedObj = JsValue.FromRaw(obj);
+            var managedObj = JsTypeMapper.FromRaw(obj);
             managedObj.Should().BeOfType<JsObject>();
             var managedObject = (JsObject)managedObj;
 
