@@ -19,8 +19,18 @@ namespace CCore.Net.Managed
             jsValueRef = jsValue;
         }
 
+        /// <summary>
+        /// Invokes a function.
+        /// </summary>
+        /// <param name="arguments">The arguments to the call. First argument is this. Same as in js function `call()`</param>
+        /// <returns>The <c>Value</c> returned from the function invocation, if any.</returns>
         public JsValueRef Invoke(params JsValueRef[] arguments) => jsValueRef.CallFunction(arguments);
 
-        public JsValue Invoke(params JsValue[] arguments) => (JsValue)Invoke(arguments: arguments.Select(v => (jsValueRef)).ToArray());
+        /// <summary>
+        /// Invokes a function.
+        /// </summary>
+        /// <param name="arguments">The arguments to the call. First argument is this. Same as in js function `call()`</param>
+        /// <returns>The <c>Value</c> returned from the function invocation, if any.</returns>
+        public JsValue Invoke(params JsValue[] arguments) => (JsValue)Invoke(arguments: arguments.Select(v => v.jsValueRef).ToArray());
     }
 }

@@ -863,7 +863,7 @@ namespace CCore.Net.JsRt
         /// <remarks>
         ///     Requires an active script context.
         /// </remarks>
-        /// <param name="arguments">The arguments to the call.</param>
+        /// <param name="arguments">The arguments to the call. First argument is this. Same as in js function `call()`</param>
         /// <returns>The <c>Value</c> returned from the function invocation, if any.</returns>
         public JsValueRef CallFunction(params JsValueRef[] arguments)
         {
