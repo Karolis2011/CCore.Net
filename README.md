@@ -2,6 +2,12 @@
 
 This wrapper was made, because most of wrappers around CC seemed complicated to use, didn't provide any guard rails or just seemed like those wrappers were made for C, an not C#. This wrapper tries to use many .Net code features that allow it it be convenient and flexible.
 
+## Things left to do for beta
+
+- JsManagedObject - C# object mapped to Js world.
+- Module support.
+- Debugging API support.
+
 # Parts of wrapper
 
 Wrapper is made up of following layers and parts
