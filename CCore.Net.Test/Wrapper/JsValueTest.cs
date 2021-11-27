@@ -39,6 +39,7 @@ namespace CCore.Net.Test.Wrapper
             JsValue.isSupported(JsValueType.Undefined, JsValueRef.Invalid).Should().BeFalse();
         }
 
+        /*
         public WeakReference GCTestPart(JsValueRef value)
         {
             var managed = new JsString(value);
@@ -79,7 +80,7 @@ namespace CCore.Net.Test.Wrapper
             refs.Should().Be(2);
             finalRefs.Should().Be(0);
         }
-
+        */
 
     }
 }

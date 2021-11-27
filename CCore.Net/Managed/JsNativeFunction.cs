@@ -42,21 +42,12 @@ namespace CCore.Net.Managed
 
         protected void OnJsFinalize()
         {
-            if(!IsFreeed)
+            if (!IsFreeed)
             {
                 callDelegateHandle.Free();
                 finalizeCallbackHandle.Free();
                 selfHandle.Free();
                 IsFreeed = true;
-            }
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-            if (disposing)
-            {
-                OnJsFinalize();
             }
         }
 

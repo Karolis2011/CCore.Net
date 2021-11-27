@@ -21,8 +21,8 @@ namespace CCore.Net.Test.Runtimes.Fixtures
         {
             Runtime.Dispose();
             Runtime = null;
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
+            // GC.Collect();
+            // GC.WaitForPendingFinalizers();
         }
     }
 }
