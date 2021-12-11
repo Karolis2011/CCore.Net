@@ -45,7 +45,7 @@ namespace CCore.Net.Test.Wrapper
             using var s = new BasicJsRuntime.Scope(fixture.Runtime);
 
             var obj = new Cls();
-            var mObj = new JsManagedObject(obj);
+            var mObj = JsManagedObject.Obtain(obj);
 
             JsObject.GlobalObject["cls"] = mObj;
 
@@ -66,7 +66,7 @@ namespace CCore.Net.Test.Wrapper
             using var s = new BasicJsRuntime.Scope(fixture.Runtime);
 
             var obj = new Cls();
-            var mObj = new JsManagedObject(obj);
+            var mObj = JsManagedObject.Obtain(obj);
 
             JsObject.GlobalObject["cls"] = mObj;
 
@@ -86,7 +86,7 @@ namespace CCore.Net.Test.Wrapper
             using var s = new BasicJsRuntime.Scope(fixture.Runtime);
 
             var obj = new Cls();
-            var mObj = new JsManagedObject(obj);
+            var mObj = JsManagedObject.Obtain(obj);
 
             JsObject.GlobalObject["cls"] = mObj;
 
@@ -114,7 +114,7 @@ namespace CCore.Net.Test.Wrapper
             using var s = new BasicJsRuntime.Scope(fixture.Runtime);
 
             var obj = new Cls();
-            var mObj = new JsManagedObject(obj);
+            var mObj = JsManagedObject.Obtain(obj);
 
             fixture.Runtime.InternalRuntime.CollectGarbage();
             fixture.Runtime.InternalRuntime.CollectGarbage();

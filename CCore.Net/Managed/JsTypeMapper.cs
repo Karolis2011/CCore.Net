@@ -1,4 +1,5 @@
 ﻿using CCore.Net.JsRt;
+using CCore.Net.Runtimes;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -17,8 +18,10 @@ namespace CCore.Net.Managed
 
             if(obj is JsValueRef jsRef) // We trying to map same to same, so just pass them trougth
                 return jsRef;
-            if(obj is JsValue jsVal) // 
+            if(obj is JsValue jsVal)
                 return jsVal;
+
+
             if(obj is string str)
                 return new JsString(str);
             if(obj is bool b)
@@ -33,8 +36,9 @@ namespace CCore.Net.Managed
                 return JsNumber.FromNumber(doubleVal);
             if (obj is decimal decimalVal)
                 return JsNumber.FromNumber(decimalVal);
+
             if (obj is Delegate @delegate)
-                return new JsManagedFunction(@delegate);
+                return JsManagedFunction.ObtainUsingDelegate(@delegate);
 
 
             throw new ArgumentException("Unsupported type to be converted to script.");

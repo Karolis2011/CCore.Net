@@ -26,7 +26,7 @@ namespace CCore.Net.Test.Wrapper
         {
             using var s = new BasicJsRuntime.Scope(fixture.Runtime);
             bool flag = false;
-            var function = new JsManagedFunction<Action<int>>((i) =>
+            var function = JsManagedFunction.Obtain<Action<int>>((i) =>
             {
                 if (i > 10)
                     flag = true;
@@ -54,7 +54,7 @@ namespace CCore.Net.Test.Wrapper
         {
             using var s = new BasicJsRuntime.Scope(fixture.Runtime);
             Func<object> func = () => valueToReturn;
-            var function = new JsManagedFunction(func);
+            var function = JsManagedFunction.Obtain(func);
             var global = JsObject.GlobalObject;
             global["test"] = function;
 
@@ -67,7 +67,7 @@ namespace CCore.Net.Test.Wrapper
         {
             using var s = new BasicJsRuntime.Scope(fixture.Runtime);
 
-            var function = new JsManagedFunction<Func<bool>>(() => true);
+            var function = JsManagedFunction.Obtain<Func<bool>>(() => true);
 
             JsValueRef valRef = function;
 

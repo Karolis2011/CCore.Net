@@ -11,7 +11,7 @@ namespace CCore.Net.Managed
 
         public static JsObject NewObject() => new JsObject(JsValueRef.CreateObject());
 
-        protected JsObject() { }
+        protected JsObject() : base() { }
 
         public JsObject(JsValueRef jsValue)
         {
@@ -50,6 +50,7 @@ namespace CCore.Net.Managed
             descriptorValue["value"] = value;
 
             DefineProperty((JsString)name, descriptorValue);
+
         }
 
         public bool DefineProperty(JsValueRef key, JsValueRef descriptor) => jsValueRef.ObjectDefineProperty(key, descriptor);

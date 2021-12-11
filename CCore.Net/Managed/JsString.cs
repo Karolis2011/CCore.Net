@@ -24,6 +24,8 @@ namespace CCore.Net.Managed
             jsValueRef = jsValue;
         }
 
+        public override string ToString() => jsValueRef.ToString();
+
         public static implicit operator string(JsString value) => value.jsValueRef.ToString();
 
         public static implicit operator JsString(string value) => new JsString(value);

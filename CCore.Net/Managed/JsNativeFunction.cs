@@ -6,8 +6,9 @@ using System.Text;
 
 namespace CCore.Net.Managed
 {
-    public class JsNativeFunction : JsFunction
+    public class JsNativeFunction : JsFunction, IJsFreeable
     {
+
         protected JsRt.JsNativeFunction callDelegate;
         protected JsFinalizeCallback finalizeCallback;
 
@@ -16,9 +17,9 @@ namespace CCore.Net.Managed
         protected GCHandle selfHandle;
         public bool IsFreeed { get; protected set; } = false;
 
-        protected JsNativeFunction() { }
+        protected JsNativeFunction() : base() { }
 
-        public JsNativeFunction(JsRt.JsNativeFunction function, IntPtr callbackState)
+        public JsNativeFunction(JsRt.JsNativeFunction function, IntPtr callbackState) : base()
         {
             JsNativeFunctionInit(function, callbackState);
         }

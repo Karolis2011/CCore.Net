@@ -60,7 +60,7 @@ namespace CCore.Net.Runtimes
             {
                 Do(() =>
                 {
-                    foreach (var r in managedObjects)
+                    foreach (var r in managedValues)
                     {
                         if (r.TryGetTarget(out JsValue value))
                         {

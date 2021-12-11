@@ -8,7 +8,7 @@ Action<JsValue> print = (v) => Console.WriteLine(v.ConvertToString());
 using var runtime = new BasicJsRuntime(CCore.Net.JsRuntimeAttributes.None);
 using var scope = new BasicJsRuntime.Scope(runtime);
 
-JsObject.GlobalObject["print"] = new JsManagedFunction(print);
+JsObject.GlobalObject["print"] = JsManagedFunction.Obtain(print);
 
 JsContext.RunScript(@"
 for(let i = 1; i <= 100; i++){

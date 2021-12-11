@@ -26,6 +26,8 @@ namespace CCore.Net.Managed
             jsValueRef = jsValue;
         }
 
+        public override string ToString() => jsValueRef.ToBoolean().ToString();
+
         public static implicit operator bool(JsBool jsBool) => jsBool.jsValueRef.ToBoolean();
         public static explicit operator JsBool(bool value) => new JsBool(value);
 

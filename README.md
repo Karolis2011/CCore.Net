@@ -4,7 +4,6 @@ This wrapper was made, because most of wrappers around CC seemed complicated to 
 
 ## Things left to do for beta
 
-- JsManagedObject - C# object mapped to Js world.
 - Module support.
 - Debugging API support.
 
@@ -71,6 +70,13 @@ And work with them...
 value.Invoke(JsObject.GlobalObject)
 Console.WriteLine(value.ConvertToString())
 ```
+
+## Dangers!!!
+
+If you use `JsValue.AddRef()` make sure to also then `JsValue.Dispose()`, failure to do so may cause following issues:
+
+- If you don't use `IScheduledJsRuntime` as your runtime, `JsValue` finalizer will throw an exception, what in turn causes process to crash.
+- If you used `AddRef()` on `IJsFreeable` then that `JsValue` will not ever be freed or finalizer called,unless you call `Dispose()`. This is caused by reference loop created by `AddRef()`.
 
 # Inspiration
 

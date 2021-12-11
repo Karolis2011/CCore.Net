@@ -1,5 +1,6 @@
 ﻿using CCore.Net.JsRt;
 using CCore.Net.Managed.Mapping;
+using CCore.Net.Runtimes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ using System.Text;
 
 namespace CCore.Net.Managed
 {
-    public class JsManagedObject : JsObject
+    public class JsManagedObject : JsObject, IJsFreeable
     {
         public object Target { get; private set; }
         protected JsFinalizeCallback finalizeCallback;
@@ -18,7 +19,20 @@ namespace CCore.Net.Managed
         protected GCHandle finalizeCallbackHandle;
         protected GCHandle selfHandle;
 
-        public JsManagedObject(object obj, MappingValidator validator = null)
+        public static JsManagedObject Obtain(object obj, MappingValidator validator = null)
+        {
+            var runtime = BasicJsRuntime.ActiveRuntime;
+            if (runtime == null)
+                throw new InvalidOperationException("No runtime present");
+            if (runtime.TryGetExistingManaged(obj, out var value))
+            {
+                if (value is JsManagedObject managedObject && obj.GetType() == managedObject.Target.GetType())
+                    return managedObject;
+            }
+            return new JsManagedObject(obj, validator);
+        }
+
+        internal JsManagedObject(object obj, MappingValidator validator = null) : base()
         {
             if(obj == null)
                 throw new ArgumentNullException(nameof(obj));
@@ -41,6 +55,8 @@ namespace CCore.Net.Managed
 
             if (mappingInfo.Freeze)
                 Freeze();
+
+            runtime.TrackManaged(this, obj);
         }
 
         private BindingFlags GetBindingFlags() => BindingFlags.Public | BindingFlags.Instance;

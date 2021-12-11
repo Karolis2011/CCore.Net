@@ -13,6 +13,6 @@ namespace CCore.Net.Managed.Mapping
 
         public override MappingInfo Map(Type type, PropertyInfo property) => new MappingInfo { Mapped = true, Name = property.Name, Enumerable = true, Freeze = true };
 
-        public override MappingInfo Map(Type type, MethodInfo method) => new MappingInfo { Mapped = true, Name = method.Name, Enumerable = true, Freeze = true };
+        public override MappingInfo Map(Type type, MethodInfo method) => new MappingInfo { Mapped = IsFullyFledgedMethod(method), Name = method.Name, Enumerable = true, Freeze = true };
     }
 }

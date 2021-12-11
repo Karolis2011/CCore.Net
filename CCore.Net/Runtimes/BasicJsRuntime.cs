@@ -2,6 +2,7 @@
 using CCore.Net.Managed;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace CCore.Net.Runtimes
 {
@@ -18,7 +19,8 @@ namespace CCore.Net.Runtimes
 
 
 
-        protected LinkedList<WeakReference<JsValue>> managedObjects = new LinkedList<WeakReference<JsValue>>();
+        protected LinkedList<WeakReference<JsValue>> managedValues = new LinkedList<WeakReference<JsValue>>();
+        protected ConditionalWeakTable<object, WeakReference<JsValue>> managedObjects = new ConditionalWeakTable<object, WeakReference<JsValue>>();
 
         public BasicJsRuntime(JsRuntimeAttributes runtimeAttributes)
         {
@@ -35,7 +37,25 @@ namespace CCore.Net.Runtimes
 
         public virtual void Track(JsValue value)
         {
-            managedObjects.AddLast(new WeakReference<JsValue>(value));
+            managedValues.AddLast(new WeakReference<JsValue>(value));
+        }
+
+        public virtual void TrackManaged(JsValue value, object obj)
+        {
+            managedObjects.Add(obj, new WeakReference<JsValue>(value));
+        }
+
+        internal bool TryGetExistingManaged(object obj, out JsValue value)
+        {
+            if(managedObjects.TryGetValue(obj, out var reference))
+                if (reference.TryGetTarget(out value))
+                {
+                    if (value is IJsFreeable freeable && freeable.IsFreeed)
+                        return false; // JsValueRef has been finalized, so this JsValue is invalid
+                    return true;
+                }
+            value = null;
+            return false;
         }
 
         protected virtual void Dispose(bool disposing)
@@ -48,7 +68,7 @@ namespace CCore.Net.Runtimes
                 }
                 using (new Scope(this))
                 {
-                    foreach (var r in managedObjects)
+                    foreach (var r in managedValues)
                     {
                         if (r.TryGetTarget(out JsValue value))
                         {
