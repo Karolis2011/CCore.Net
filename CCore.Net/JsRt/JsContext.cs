@@ -21,13 +21,13 @@ namespace CCore.Net.JsRt
         /// <summary>
         ///     The reference.
         /// </summary>
-        private readonly IntPtr reference;
+        private readonly JsRef reference;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="JsContext"/> struct. 
         /// </summary>
         /// <param name="reference">The reference.</param>
-        internal JsContext(IntPtr reference)
+        internal JsContext(JsRef reference)
         {
             this.reference = reference;
         }
@@ -37,7 +37,7 @@ namespace CCore.Net.JsRt
         /// </summary>
         public static JsContext Invalid
         {
-            get { return new JsContext(IntPtr.Zero); }
+            get { return new JsContext(JsRef.Invalid); }
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace CCore.Net.JsRt
         /// <summary>
         ///     Gets a value indicating whether the context is a valid context or not.
         /// </summary>
-        public bool IsValid => reference != IntPtr.Zero;
+        public bool IsValid => reference.IsValid;
 
         /// <summary>
         ///     Tells the runtime to do any idle processing it need to do.

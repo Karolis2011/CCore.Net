@@ -9,15 +9,35 @@ using System.Text;
 
 namespace CCore.Net.Managed
 {
+    public class JsManagedFunction<T> : JsManagedFunction where T : Delegate
+    {
+        public new T Target => (T)base.Target;
+        public JsManagedFunction(T @delegate) : base(@delegate)
+        {
+        }
+
+        public JsManagedFunction(T @delegate, string name) : base(@delegate, name)
+        {
+        }
+    }
+
     public class JsManagedFunction : JsNativeFunction
     {
-
+        public Delegate Target { get; private set; }
+        protected JsManagedFunction() { }
         public JsManagedFunction(Delegate @delegate)
         {
+            Target = @delegate;
             JsNativeFunctionInit(WrapDelegate(@delegate), IntPtr.Zero);
         }
 
-        private JsRt.JsNativeFunction WrapDelegate(Delegate @delegate)
+        public JsManagedFunction(Delegate @delegate, string name)
+        {
+            Target = @delegate;
+            JsNativeFunctionInit(WrapDelegate(@delegate), IntPtr.Zero, name);
+        }
+
+        protected JsRt.JsNativeFunction WrapDelegate(Delegate @delegate)
         {
             return (callee, isConstructCall, args, argCount, callbackData) =>
             {
@@ -35,50 +55,66 @@ namespace CCore.Net.Managed
                 }
                 catch (Exception e)
                 {
-                    ProcessException(e);
+                    e = JsManagedUtils.UnwrapException(e);
+                    if (e is JsException jsrte)
+                    {
+                        runtime.SetException(JsManagedUtils.CreateErrorFromWrapperException(jsrte));
+                    }
+                    else
+                    {
+                        runtime.SetException(new JsError($"Error invoking managed function: {e.Message}"));
+                    }
                 }
                 return JsValueRef.Undefined;
             };
         }
 
-        private void ProcessException(Exception exception)
+        protected JsRt.JsNativeFunction WrapDelegate(MethodInfo[] methodGroup, object obj)
         {
-            exception = UnwrapException(exception);
-            if(exception is JsException jsrte)
+            return (callee, isConstructCall, args, argCount, callbackData) =>
             {
-                runtime.SetException(CreateErrorFromWrapperException(jsrte));
-            } else
+                try
+                {
+                    if (!IsCompatibleSignature(methodGroup, args, out MethodInfo bestSelection, out object[] processedArgs))
+                    {
+                        throw new Exception("Method signature is incompatible with passed arguments.");
+                    }
+                    object result = bestSelection.Invoke(obj, processedArgs);
+
+                    return JsTypeMapper.ToScript(result);
+                }
+                catch (Exception e)
+                {
+                    e = JsManagedUtils.UnwrapException(e);
+                    if (e is JsException jsrte)
+                    {
+                        runtime.SetException(JsManagedUtils.CreateErrorFromWrapperException(jsrte));
+                    }
+                    else
+                    {
+                        runtime.SetException(new JsError($"Error invoking managed function: {e.Message}"));
+                    }
+                }
+                return JsValueRef.Undefined;
+            };
+        }
+
+        private bool IsCompatibleSignature(MethodInfo[] methods, JsValueRef[] args, out MethodInfo bestSelection, out object[] processedArgs)
+        {
+            var argTypes = args.Select(v => v.ValueType).ToArray();
+            var preProcessed = methods.Select((m) => new { m, p = m.GetParameters() }).OrderByDescending((c) => c.p.Length);
+            foreach (var cand in preProcessed)
             {
-                runtime.SetException(new JsError($"Error invoking managed function: {exception.Message}"));
+                if(IsCompatibleSignature(argTypes, args, cand.p, out processedArgs))
+                {
+                    bestSelection = cand.m;
+                    return true;
+                }
             }
+            bestSelection = null;
+            processedArgs = null;
+            return false;
         }
-
-        private static JsValueRef CreateErrorFromWrapperException(JsException exception)
-        {
-            JsErrorCode errorCode = exception.InnerException is JsException originalException ?
-                originalException.ErrorCode : JsErrorCode.NoError;
-            var description = Enum.GetName(typeof(JsErrorCode), errorCode);
-
-            JsValueRef innerErrorValue = JsValueRef.CreateError(JsValueRef.From(description));
-            innerErrorValue.SetIndexedProperty(JsValueRef.From("description"), JsValueRef.From(description));
-
-            JsValueRef errorValue = JsValueRef.CreateError(JsValueRef.From(description));
-            errorValue.SetIndexedProperty(JsValueRef.From("innerException"), innerErrorValue);
-            return errorValue;
-        }
-
-        private static Exception UnwrapException(Exception exception)
-        {
-            Exception originalException = exception;
-            if (exception is TargetInvocationException targetInvocationException)
-            {
-                Exception innerException = targetInvocationException.InnerException;
-                if (innerException != null)
-                    originalException = innerException;
-            }
-            return originalException;
-        }
-
 
         private bool IsCompatibleSignature(JsValueType[] argTypes, JsValueRef[] args, ParameterInfo[] parameters, out object[] mappedParameters)
 		{

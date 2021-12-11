@@ -30,9 +30,7 @@ namespace CCore.Net.Test.Wrapper
                 return JsBool.True;
             }, IntPtr.Zero);
 
-            var global = JsObject.GlobalObject;
-
-            global["test"] = function;
+            JsObject.GlobalObject["test"] = function;
 
             var functionResult = (JsValue)JsContext.RunScript("test()");
             functionResult.Should().BeOfType<JsBool>();
@@ -40,7 +38,7 @@ namespace CCore.Net.Test.Wrapper
             boolResult.Should().Be(JsBool.True);
 
             var jsFunction = (JsValue)JsContext.RunScript("test");
-            jsFunction.Should().BeOfType<JsFunction>();
+            jsFunction.GetType().Should().BeAssignableTo<JsFunction>();
             var reconvertedFunction = (JsFunction)jsFunction;
 
             reconvertedFunction.Should().Be(function);
@@ -57,8 +55,25 @@ namespace CCore.Net.Test.Wrapper
             }, IntPtr.Zero);
 
             fixture.Runtime.InternalRuntime.CollectGarbage();
+            fixture.Runtime.InternalRuntime.CollectGarbage();
 
             function.IsFreeed.Should().BeTrue();
+        }
+
+        [Fact]
+        public void ForwardAndBackward()
+        {
+            using var s = new BasicJsRuntime.Scope(fixture.Runtime);
+
+            var function = new Managed.JsNativeFunction((calle, isConstructor, arguments, argCount, state) =>
+            {
+                return JsBool.True;
+            }, IntPtr.Zero);
+
+            JsValueRef valRef = function;
+
+            var managedValue = JsTypeMapper.FromRaw(valRef);
+            managedValue.Should().BeSameAs(function);
         }
     }
 }

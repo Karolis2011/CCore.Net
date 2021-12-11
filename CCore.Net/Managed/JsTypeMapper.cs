@@ -1,6 +1,7 @@
 ﻿using CCore.Net.JsRt;
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace CCore.Net.Managed
@@ -91,8 +92,24 @@ namespace CCore.Net.Managed
                 case JsValueType.Boolean:
                     return new JsBool(jsValue);
                 case JsValueType.Object:
+                    if(jsValue.HasExternalData)
+                    {
+                        var handle = GCHandle.FromIntPtr(jsValue.ExternalData);
+                        if (handle.Target is JsManagedObject managedObject)
+                            return managedObject;
+                    }
                     return new JsObject(jsValue);
                 case JsValueType.Function:
+                    var externalObj = jsValue.GetIndexedProperty(JsValueRef.From(JsValue.ExternalObjectPropertyName));
+                    if(externalObj.HasExternalData) // Recover managed objects
+                    {
+                        var handle = GCHandle.FromIntPtr(externalObj.ExternalData);
+                        if (handle.Target is JsManagedFunction managedFunction)
+                            return managedFunction;
+                        if(handle.Target is JsNativeFunction nativeFunction)
+                            return nativeFunction;
+                        throw new Exception("Unsupprted managed object");
+                    }
                     return new JsFunction(jsValue);
                 case JsValueType.Error:
                     return new JsError(jsValue);

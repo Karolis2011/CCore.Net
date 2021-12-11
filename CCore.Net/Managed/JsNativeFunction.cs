@@ -31,11 +31,25 @@ namespace CCore.Net.Managed
             callDelegateHandle = GCHandle.Alloc(callDelegate);
             finalizeCallbackHandle = GCHandle.Alloc(finalizeCallback);
             selfHandle = GCHandle.Alloc(this);
-
             jsValueRef = JsValueRef.CreateFunction(callDelegate, callbackState);
             var externalObject = JsValueRef.CreateExternalObject(IntPtr.Zero, finalizeCallback);
             externalObject.ExternalData = (IntPtr)selfHandle;
-            SetNonEnumerableProperty(ExternalObjectPropertyName, externalObject);
+            SetInternalProperty(ExternalObjectPropertyName, externalObject);
+        }
+
+        protected void JsNativeFunctionInit(JsRt.JsNativeFunction function, IntPtr callbackState, string name)
+        {
+            callDelegate = function;
+            finalizeCallback = (ptr) =>
+                OnJsFinalize();
+            callDelegateHandle = GCHandle.Alloc(callDelegate);
+            finalizeCallbackHandle = GCHandle.Alloc(finalizeCallback);
+            selfHandle = GCHandle.Alloc(this);
+
+            jsValueRef = JsValueRef.CreateNamedFunction(name, callDelegate, callbackState);
+            var externalObject = JsValueRef.CreateExternalObject(IntPtr.Zero, finalizeCallback);
+            externalObject.ExternalData = (IntPtr)selfHandle;
+            SetInternalProperty(ExternalObjectPropertyName, externalObject);
         }
 
 

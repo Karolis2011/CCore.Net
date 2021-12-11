@@ -40,15 +40,23 @@ namespace CCore.Net.Managed
             set => this[JsValueRef.From(index)] = value;
         }
 
-        internal void SetNonEnumerableProperty(string name, JsValueRef value)
+        internal void SetInternalProperty(string name, JsValueRef value)
         {
-            JsObject descriptorValue = NewObject();
-            descriptorValue["enumerable"] = JsValueRef.False;
-            descriptorValue["writable"] = JsValueRef.True;
 
-            var key = (JsString)name;
-            jsValueRef.ObjectDefineProperty(key, descriptorValue);
-            this[(JsValueRef)key] = value;
+            JsObject descriptorValue = NewObject();
+            descriptorValue["configurable"] = JsValueRef.False;
+            descriptorValue["enumerable"] = JsValueRef.False;
+            descriptorValue["writable"] = JsValueRef.False;
+            descriptorValue["value"] = value;
+
+            DefineProperty((JsString)name, descriptorValue);
         }
+
+        public bool DefineProperty(JsValueRef key, JsValueRef descriptor) => jsValueRef.ObjectDefineProperty(key, descriptor);
+
+        /// <summary>
+        /// A short hand to `Object.freeze(object)`
+        /// </summary>
+        public void Freeze() => ((JsFunction)((JsObject)GlobalObject["Object"])["freeze"]).Invoke(GlobalObject, jsValueRef);
     }
 }

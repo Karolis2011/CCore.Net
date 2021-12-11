@@ -26,13 +26,11 @@ namespace CCore.Net.Test.Wrapper
         {
             using var s = new BasicJsRuntime.Scope(fixture.Runtime);
             bool flag = false;
-            Action<int> action = (i) =>
+            var function = new JsManagedFunction<Action<int>>((i) =>
             {
                 if (i > 10)
                     flag = true;
-            };
-
-            var function = new JsManagedFunction(action);
+            });
             var global = JsObject.GlobalObject;
             global["test"] = function;
 
@@ -62,6 +60,19 @@ namespace CCore.Net.Test.Wrapper
 
             var result = (JsBool)JsContext.RunScript($"test() == {expectedJs}");
             ((bool)result).Should().BeTrue();
+        }
+
+        [Fact]
+        public void ForwardAndBackward()
+        {
+            using var s = new BasicJsRuntime.Scope(fixture.Runtime);
+
+            var function = new JsManagedFunction<Func<bool>>(() => true);
+
+            JsValueRef valRef = function;
+
+            var managedValue = JsTypeMapper.FromRaw(valRef);
+            managedValue.Should().BeSameAs(function);
         }
     }
 }

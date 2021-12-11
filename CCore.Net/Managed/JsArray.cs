@@ -15,7 +15,7 @@ namespace CCore.Net.Managed
         public JsArray(JsValueRef jsValue)
         {
             if (!jsValue.IsValid)
-                throw new Exception("Indalid value");
+                throw new Exception("Invalid value");
             if (!isSupported(jsValue.ValueType, jsValue))
                 throw new Exception("Unsupported type");
             jsValueRef = jsValue;

@@ -15,18 +15,18 @@ namespace CCore.Net.JsRt
         /// <summary>
         /// The reference.
         /// </summary>
-        private readonly IntPtr reference;
+        private readonly JsRef reference;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="JsValueRef"/> struct.
         /// </summary>
         /// <param name="reference">The reference.</param>
-        private JsValueRef(IntPtr reference) => this.reference = reference;
+        private JsValueRef(JsRef reference) => this.reference = reference;
 
         /// <summary>
         ///     Gets an invalid value.
         /// </summary>
-        public static JsValueRef Invalid => new JsValueRef(IntPtr.Zero);
+        public static JsValueRef Invalid => new JsValueRef(JsRef.Invalid);
 
         /// <summary>
         ///     Gets the value of <c>undefined</c> in the current script context.
@@ -106,10 +106,7 @@ namespace CCore.Net.JsRt
         /// <summary>
         ///     Gets a value indicating whether the value is valid.
         /// </summary>
-        public bool IsValid
-        {
-            get { return reference != IntPtr.Zero; }
-        }
+        public bool IsValid => reference.IsValid; 
 
         /// <summary>
         ///     Gets the JavaScript type of the value.
