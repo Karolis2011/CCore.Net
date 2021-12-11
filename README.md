@@ -4,6 +4,7 @@ This wrapper was made, because most of wrappers around CC seemed complicated to 
 
 ## Things left to do for beta
 
+- Type mapping support
 - Module support.
 - Debugging API support.
 
