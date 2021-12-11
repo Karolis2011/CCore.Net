@@ -18,7 +18,7 @@ namespace CCore.Net.Managed
         protected GCHandle finalizeCallbackHandle;
         protected GCHandle selfHandle;
 
-        public JsManagedObject(object obj, MappingValidator validator)
+        public JsManagedObject(object obj, MappingValidator validator = null)
         {
             if(obj == null)
                 throw new ArgumentNullException(nameof(obj));
