@@ -24,7 +24,7 @@ namespace CCore.Net.JsRt
                 var ow = JsContext.RunScript("x = 5");
                 var glob = JsValueRef.GlobalObject;
                 var value = glob.GetIndexedProperty(JsValueRef.From("x"));
-                Assert.Equal(ow, value);
+                Assert.True(ow.Equals(value));
                 Assert.Equal(JsValueType.Number, value.ValueType);
                 Assert.Equal(5, value.ToInt32());
             }
