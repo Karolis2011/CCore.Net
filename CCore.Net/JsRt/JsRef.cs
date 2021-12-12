@@ -28,5 +28,13 @@ namespace CCore.Net.JsRt
         {
             get { return reference != IntPtr.Zero; }
         }
+
+        public override bool Equals(object obj) => reference.Equals(obj);
+
+        public override int GetHashCode() => reference.GetHashCode();
+
+        public static bool operator ==(JsRef a, JsRef b) => a.reference == b.reference;
+        public static bool operator !=(JsRef a, JsRef b) => a.reference != b.reference;
+
     }
 }

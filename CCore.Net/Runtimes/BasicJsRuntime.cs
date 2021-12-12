@@ -12,12 +12,17 @@ namespace CCore.Net.Runtimes
 
         protected JsRuntime runtime;
         protected JsContext context;
+        protected JsPromiseContinuationCallback jsPromiseContinuationCallback;
 
 
         public JsRuntime InternalRuntime => runtime;
         public JsContext InternalContext => context;
 
-
+        public bool Enabled
+        {
+            get => !runtime.Disabled;
+            set => runtime.Disabled = !value;
+        }
 
         protected LinkedList<WeakReference<JsValue>> managedValues = new LinkedList<WeakReference<JsValue>>();
         protected ConditionalWeakTable<object, WeakReference<JsValue>> managedObjects = new ConditionalWeakTable<object, WeakReference<JsValue>>();
@@ -35,14 +40,22 @@ namespace CCore.Net.Runtimes
                 throw new ObjectDisposedException(nameof(BasicJsRuntime));
         }
 
-        public virtual void Track(JsValue value)
+        internal virtual void Track(JsValue value)
         {
             managedValues.AddLast(new WeakReference<JsValue>(value));
         }
 
-        public virtual void TrackManaged(JsValue value, object obj)
+        internal virtual void TrackManaged(JsValue value, object obj)
         {
             managedObjects.Add(obj, new WeakReference<JsValue>(value));
+        }
+
+        public void SetPromiseContinuationCallback(JsPromiseContinuationCallback callback, IntPtr state)
+        {
+            if (JsContext.Current != context)
+                throw new InvalidOperationException("Not in this runtimes context.");
+            jsPromiseContinuationCallback = callback;
+            JsContext.SetPromiseContinuationCallback(jsPromiseContinuationCallback, state);
         }
 
         internal bool TryGetExistingManaged(object obj, out JsValue value)

@@ -54,6 +54,22 @@ namespace CCore.Net.Runtimes
             }
         }, priority);
 
+        public virtual JsTask<TResult> DoTimed<TResult>(Func<TResult> func, Action onTimeout, TimeSpan timeout, JsTaskPriority priority = JsTaskPriority.LOWEST) => Scheduler.RunTimed(() =>
+        {
+            using (new Scope(this))
+            {
+                return func();
+            }
+        }, onTimeout, timeout, priority);
+
+        public virtual JsTask DoTimed(Action action, Action onTimeout, TimeSpan timeout, JsTaskPriority priority = JsTaskPriority.LOWEST) => Scheduler.RunTimed(() =>
+        {
+            using (new Scope(this))
+            {
+                action();
+            }
+        }, onTimeout, timeout, priority);
+
         protected override void Dispose(bool disposing)
         {
             if (!disposedValue)

@@ -294,6 +294,13 @@ namespace CCore.Net.JsRt
             Native.ThrowIfError(Native.JsSetPromiseContinuationCallback(promiseContinuationCallback, callbackState));
         }
 
+        public override bool Equals(object obj) => reference.Equals(obj);
+
+        public override int GetHashCode() => reference.GetHashCode();
+
+        public static bool operator ==(JsContext a, JsContext b) => a.reference == b.reference;
+        public static bool operator !=(JsContext a, JsContext b) => a.reference != b.reference;
+
         /// <summary>
         ///     A scope automatically sets a context to current and resets the original context
         ///     when disposed.

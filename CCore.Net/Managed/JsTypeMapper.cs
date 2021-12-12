@@ -1,4 +1,5 @@
 ﻿using CCore.Net.JsRt;
+using CCore.Net.Managed.Mapping;
 using CCore.Net.Runtimes;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,9 @@ namespace CCore.Net.Managed
 {
     public static class JsTypeMapper
     {
-
+        public static bool MapObjectsAutomaticly { get; set; } = false;
+        public static bool MapTypesAutomaticly { get; set; } = false;
+        public static MappingValidator MappingValidator { get; set; } = new MaxMappingValidator();
 
         public static JsValueRef ToScript(object obj)
         {
@@ -41,22 +44,19 @@ namespace CCore.Net.Managed
                 return JsManagedFunction.ObtainUsingDelegate(@delegate);
 
 
+            if (MapObjectsAutomaticly)
+                return JsManagedObject.Obtain(obj, MappingValidator);
+
+
             throw new ArgumentException("Unsupported type to be converted to script.");
         }
 
         public static object ToHost(JsValueRef jsValue, Type expectedType)
         {
             var actuallType = jsValue.ValueType;
-            if (typeof(JsValue).IsAssignableFrom(expectedType))
-            {
-                var value = FromRaw(jsValue);
-                if (expectedType.IsAssignableFrom(value.GetType())) {
-                    return value; // This code smells
-                } else
-                {
-                    throw new Exception("Type missmatch.");
-                }
-            }
+            if (expectedType == typeof(JsValueRef))
+                return jsValue;
+
             if (jsValue.Equals(JsValueRef.Null))
                 return null;
 
@@ -75,13 +75,28 @@ namespace CCore.Net.Managed
             if (expectedType == typeof(bool))
                 return (bool)new JsBool(jsValue);
 
+            var value = FromRaw(jsValue);
+            if (typeof(JsValue).IsAssignableFrom(expectedType))
+            {
+                if (expectedType.IsAssignableFrom(value.GetType()))
+                {
+                    return value; // This code smells
+                }
+                throw new Exception("Managed Type missmatch.");
+            }
+            if (value is JsManagedObject managedObject)
+            {
+                if (expectedType.IsAssignableFrom(managedObject.Target.GetType()))
+                    return managedObject.Target;
+            }
+
             throw new ArgumentException("Unsupported type to be converted to host.");
         }
 
         public static JsValue FromRaw(JsValueRef jsValue)
         {
             if (!jsValue.IsValid)
-                throw new Exception("Indalid value");
+                throw new Exception("Invalid value");
             var type = jsValue.ValueType;
             switch (type)
             {

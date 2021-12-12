@@ -8,6 +8,5 @@ namespace CCore.Net.Runtimes
         JsRuntime InternalRuntime { get; }
         JsContext InternalContext { get; }
         void EnsureReady();
-        void Track(JsValue value);
     }
 }
