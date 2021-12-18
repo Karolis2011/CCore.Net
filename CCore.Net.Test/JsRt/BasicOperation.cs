@@ -42,10 +42,8 @@ namespace CCore.Net.JsRt
                     {
                         JsContext.RunScript("while(true){}");
                     }
-                    catch (JsScriptException ex)
+                    catch (JsTerminationException ex)
                     {
-                        if (ex.ErrorCode != JsErrorCode.ScriptTerminated)
-                            throw;
                     }
                 }
                 fixture.runtime.Disabled = false;

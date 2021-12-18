@@ -80,11 +80,15 @@ namespace CCore.Net.JsRt
                     case JsErrorCode.ScriptException:
                         {
                             JsErrorCode innerError = JsGetAndClearException(out JsValueRef errorObject);
-
-                            if (innerError != JsErrorCode.NoError)
+                            if (innerError == JsErrorCode.InDisabledState)
                             {
-                                throw new JsFatalException(innerError);
+                                var runtime = JsContext.Current.Runtime;
+                                runtime.Disabled = false;
+                                JsGetAndClearException(out JsValueRef _);
+                                throw new JsTerminationException(innerError);
                             }
+                            if (innerError != JsErrorCode.NoError)
+                                throw new JsFatalException(innerError);
                             throw JsScriptException.FromError(error, errorObject, "Script error");
                         }
 
@@ -92,15 +96,20 @@ namespace CCore.Net.JsRt
                         {
                             JsErrorCode innerError = JsGetAndClearException(out JsValueRef errorObject);
 
-                            if (innerError != JsErrorCode.NoError)
+                            if (innerError == JsErrorCode.InDisabledState)
                             {
-                                throw new JsFatalException(innerError);
+                                var runtime = JsContext.Current.Runtime;
+                                runtime.Disabled = false;
+                                JsGetAndClearException(out JsValueRef _);
+                                throw new JsTerminationException(innerError);
                             }
+                            if (innerError != JsErrorCode.NoError)
+                                throw new JsFatalException(innerError);
                             throw JsScriptException.FromError(error, errorObject, "Compile error");
                         }
 
                     case JsErrorCode.ScriptTerminated:
-                        throw new JsScriptException(error, JsValueRef.Invalid, "Script was terminated.");
+                        throw new JsTerminationException(error);
 
                     case JsErrorCode.ScriptEvalDisabled:
                         throw new JsScriptException(error, JsValueRef.Invalid, "Eval of strings is disabled in this runtime.");
