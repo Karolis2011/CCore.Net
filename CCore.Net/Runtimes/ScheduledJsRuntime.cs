@@ -14,10 +14,12 @@ namespace CCore.Net.Runtimes
 
     public class ScheduledJsRuntime<TScheduler> : BasicJsRuntime, IScheduledJsRuntime where TScheduler : JsScheduler
     {
-        protected JsScheduler Scheduler;
+        protected JsScheduler scheduler;
 
         private JsTask initilizationTask;
         private bool ready = false;
+
+        public TScheduler Scheduler => (TScheduler)scheduler;
 
         public ScheduledJsRuntime(TScheduler scheduler) : this(JsRuntimeAttributes.None, scheduler)
         {
@@ -25,8 +27,8 @@ namespace CCore.Net.Runtimes
 
         public ScheduledJsRuntime(JsRuntimeAttributes runtimeAttributes, TScheduler scheduler) : base(runtimeAttributes)
         {
-            Scheduler = scheduler;
-            initilizationTask = Scheduler.Run(() =>
+            this.scheduler = scheduler;
+            initilizationTask = this.scheduler.Run(() =>
             {
                 ready = true;
             }, JsTaskPriority.INITIALIZATION);
@@ -38,7 +40,7 @@ namespace CCore.Net.Runtimes
                 initilizationTask.Wait();
         }
 
-        public virtual JsTask<TResult> Do<TResult>(Func<TResult> func, JsTaskPriority priority = JsTaskPriority.LOWEST) => Scheduler.Run(() =>
+        public virtual JsTask<TResult> Do<TResult>(Func<TResult> func, JsTaskPriority priority = JsTaskPriority.LOWEST) => scheduler.Run(() =>
         {
             using (new Scope(this))
             {
@@ -46,7 +48,7 @@ namespace CCore.Net.Runtimes
             }
         }, priority);
 
-        public virtual JsTask Do(Action action, JsTaskPriority priority = JsTaskPriority.LOWEST) => Scheduler.Run(() =>
+        public virtual JsTask Do(Action action, JsTaskPriority priority = JsTaskPriority.LOWEST) => scheduler.Run(() =>
         {
             using (new Scope(this))
             {
@@ -54,7 +56,7 @@ namespace CCore.Net.Runtimes
             }
         }, priority);
 
-        public virtual JsTask<TResult> DoTimed<TResult>(Func<TResult> func, Action onTimeout, TimeSpan timeout, JsTaskPriority priority = JsTaskPriority.LOWEST) => Scheduler.RunTimed(() =>
+        public virtual JsTask<TResult> DoTimed<TResult>(Func<TResult> func, Action onTimeout, TimeSpan timeout, JsTaskPriority priority = JsTaskPriority.LOWEST) => scheduler.RunTimed(() =>
         {
             using (new Scope(this))
             {
@@ -62,7 +64,7 @@ namespace CCore.Net.Runtimes
             }
         }, onTimeout, timeout, priority);
 
-        public virtual JsTask DoTimed(Action action, Action onTimeout, TimeSpan timeout, JsTaskPriority priority = JsTaskPriority.LOWEST) => Scheduler.RunTimed(() =>
+        public virtual JsTask DoTimed(Action action, Action onTimeout, TimeSpan timeout, JsTaskPriority priority = JsTaskPriority.LOWEST) => scheduler.RunTimed(() =>
         {
             using (new Scope(this))
             {
@@ -84,7 +86,7 @@ namespace CCore.Net.Runtimes
                         }
                     }
                 }).Wait();
-                if (Scheduler is IDisposable disposableScheduler)
+                if (scheduler is IDisposable disposableScheduler)
                 {
                     disposableScheduler.Dispose();
                 }

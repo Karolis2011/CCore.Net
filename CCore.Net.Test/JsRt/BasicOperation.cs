@@ -42,7 +42,7 @@ namespace CCore.Net.JsRt
                     {
                         JsContext.RunScript("while(true){}");
                     }
-                    catch (JsTerminationException ex)
+                    catch (JsTerminationException)
                     {
                     }
                 }

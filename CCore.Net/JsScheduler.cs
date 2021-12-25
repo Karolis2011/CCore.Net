@@ -10,6 +10,11 @@ namespace CCore.Net
     public abstract class JsScheduler
     {
         /// <summary>
+        /// Event fired when Scheduler enters idle state.
+        /// </summary>
+        public event Action EnterIdle;
+
+        /// <summary>
         /// Internal use only. Enter break state processing on current thread, make this method return to exit break state.
         /// </summary>
         public abstract void EnterBreakState();
@@ -37,6 +42,12 @@ namespace CCore.Net
         /// </summary>
         /// <returns></returns>
         public abstract bool CanExecuteInThisThread();
+
+        /// <summary>
+        /// Gets current task that is being executed by Scheduler.
+        /// </summary>
+        /// <returns>JsTask that is being executed.</returns>
+        public abstract JsTask GetCurrentTask();
 
         /// <summary>
         /// Create and start new task on this scheduler

@@ -8,14 +8,20 @@ using System.Threading.Tasks;
 namespace CCore.Net
 {
 
+    public interface IJsTaskTimed
+    {
+        TimeSpan RemainingTime { get; }
+    }
+
     /// <summary>
     /// A timed JsTask witch specified task action to be executed on timeout
     /// </summary>
-    public class JsTaskTimed : JsTask
+    public class JsTaskTimed : JsTask, IJsTaskTimed
     {
         protected Action timeoutAction;
         protected Stopwatch timer = new Stopwatch();
         protected TimeSpan timeout;
+        public TimeSpan RemainingTime => timeout - timer.Elapsed;
 
         /// <summary>
         /// Creates a new Timed task
@@ -61,17 +67,19 @@ namespace CCore.Net
             base.OnResume();
             timer.Start();
         }
+
     }
 
     /// <summary>
     /// A timed JsTask witch specified task action to be executed on timeout, with return result
     /// </summary>
     /// <typeparam name="TResult"></typeparam>
-    public class JsTaskTimed<TResult> : JsTask<TResult>
+    public class JsTaskTimed<TResult> : JsTask<TResult>, IJsTaskTimed
     {
         protected Action timeoutAction;
         protected Stopwatch timer = new Stopwatch();
         protected TimeSpan timeout;
+        public TimeSpan RemainingTime => timeout - timer.Elapsed;
 
         /// <summary>
         /// Creates a new Timed task

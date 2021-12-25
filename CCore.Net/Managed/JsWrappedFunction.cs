@@ -116,7 +116,9 @@ namespace CCore.Net.Managed
                         return false;
                     try
                     {
-                        mp[i] = JsTypeMapper.ToHost(args[argPos], param.ParameterType);
+                        mp[i] = JsTypeMapper.ToHost(args[argPos], param.ParameterType, out var success);
+                        if(!success)
+                            return false;
                         argPos++;
                     }
                     catch (Exception)

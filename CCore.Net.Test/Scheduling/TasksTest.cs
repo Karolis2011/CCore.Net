@@ -37,6 +37,11 @@ namespace CCore.Net.Test.Scheduling
             {
                 //task.Run();
             }
+
+            public override JsTask GetCurrentTask()
+            {
+                return null;
+            }
         }
 
 

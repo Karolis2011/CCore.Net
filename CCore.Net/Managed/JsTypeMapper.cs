@@ -51,28 +51,29 @@ namespace CCore.Net.Managed
             throw new ArgumentException("Unsupported type to be converted to script.");
         }
 
-        public static object ToHost(JsValueRef jsValue, Type expectedType)
+        public static object ToHost(JsValueRef jsValue, Type expectedType, out bool success)
         {
-            var actuallType = jsValue.ValueType;
+            success = true;
+            var actualType = jsValue.ValueType;
             if (expectedType == typeof(JsValueRef))
                 return jsValue;
 
             if (jsValue.Equals(JsValueRef.Null))
                 return null;
 
-            if (expectedType == typeof(string))
-                return (string)new JsString(jsValue);
-            if (expectedType == typeof(int))
+            if (expectedType == typeof(string) && JsString.isSupported(actualType, jsValue))
+                return (string)new JsString(jsValue); 
+            if (expectedType == typeof(int) && JsNumber.isSupported(actualType, jsValue))
                 return (int)new JsNumber(jsValue);
-            if (expectedType == typeof(long))
+            if (expectedType == typeof(long) && JsNumber.isSupported(actualType, jsValue))
                 return (long)new JsNumber(jsValue);
-            if (expectedType == typeof(float))
+            if (expectedType == typeof(float) && JsNumber.isSupported(actualType, jsValue))
                 return (float)new JsNumber(jsValue);
-            if (expectedType == typeof(decimal))
+            if (expectedType == typeof(decimal) && JsNumber.isSupported(actualType, jsValue))
                 return (decimal)new JsNumber(jsValue);
-            if (expectedType == typeof(double))
+            if (expectedType == typeof(double) && JsNumber.isSupported(actualType, jsValue))
                 return (double)new JsNumber(jsValue);
-            if (expectedType == typeof(bool))
+            if (expectedType == typeof(bool) && JsBool.isSupported(actualType, jsValue))
                 return (bool)new JsBool(jsValue);
 
             var value = FromRaw(jsValue);
@@ -82,15 +83,16 @@ namespace CCore.Net.Managed
                 {
                     return value; // This code smells
                 }
-                throw new Exception("Managed Type missmatch.");
+                success = false;
+                return null;
             }
             if (value is JsManagedObject managedObject)
             {
                 if (expectedType.IsAssignableFrom(managedObject.Target.GetType()))
                     return managedObject.Target;
             }
-
-            throw new ArgumentException("Unsupported type to be converted to host.");
+            success = false;
+            return null;
         }
 
         public static JsValue FromRaw(JsValueRef jsValue)

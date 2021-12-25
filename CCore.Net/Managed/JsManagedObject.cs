@@ -100,7 +100,13 @@ namespace CCore.Net.Managed
                 {
                     try
                     {
-                        field.SetValue(Target, JsTypeMapper.ToHost(args[1], field.FieldType));
+                        var value = JsTypeMapper.ToHost(args[1], field.FieldType, out var success);
+                        if(!success)
+                        {
+                            runtime.SetException(new JsError("Unsupported type."));
+                            return JsValueRef.Undefined;
+                        }
+                        field.SetValue(Target, value);
                     }
                     catch (Exception e)
                     {
@@ -173,7 +179,13 @@ namespace CCore.Net.Managed
                     {
                         try
                         {
-                            property.SetValue(Target, JsTypeMapper.ToHost(args[1], property.PropertyType));
+                            var value = JsTypeMapper.ToHost(args[1], property.PropertyType, out var success);
+                            if (!success)
+                            {
+                                runtime.SetException(new JsError("Unsupported type."));
+                                return JsValueRef.Undefined;
+                            }
+                            property.SetValue(Target, value);
                         }
                         catch (Exception e)
                         {

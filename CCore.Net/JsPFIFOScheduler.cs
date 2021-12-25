@@ -163,5 +163,12 @@ namespace CCore.Net
         }
 
         public override bool CanExecuteInThisThread() => Thread.CurrentThread == thread;
+
+        public override JsTask GetCurrentTask()
+        {
+            if (CanExecuteInThisThread())
+                return currentlyExecuting;
+            return null;
+        }
     }
 }
