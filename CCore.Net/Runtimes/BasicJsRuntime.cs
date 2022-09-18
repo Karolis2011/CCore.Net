@@ -63,7 +63,7 @@ namespace CCore.Net.Runtimes
             if(managedObjects.TryGetValue(obj, out var reference))
                 if (reference.TryGetTarget(out value))
                 {
-                    if (value is IJsFreeable freeable && freeable.IsFreeed)
+                    if (value is IJsFreeable freeable && freeable.IsFreed)
                         return false; // JsValueRef has been finalized, so this JsValue is invalid
                     return true;
                 }

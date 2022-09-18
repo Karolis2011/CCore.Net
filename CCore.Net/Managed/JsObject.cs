@@ -5,7 +5,7 @@ namespace CCore.Net.Managed
 {
     public class JsObject : JsValue
     {
-        public static new bool isSupported(JsValueType type, JsValueRef value) => type == JsValueType.Object;
+        public static new bool IsSupported(JsValueType type, JsValueRef value) => type == JsValueType.Object;
 
         public static JsObject GlobalObject => new JsObject(JsValueRef.GlobalObject);
 
@@ -17,7 +17,7 @@ namespace CCore.Net.Managed
         {
             if (!jsValue.IsValid)
                 throw new Exception("Indalid value");
-            if (!isSupported(jsValue.ValueType, jsValue))
+            if (!IsSupported(jsValue.ValueType, jsValue))
                 throw new Exception("Unsupported type");
             jsValueRef = jsValue;
         }

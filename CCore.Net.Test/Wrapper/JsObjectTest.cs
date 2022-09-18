@@ -23,7 +23,7 @@ namespace CCore.Net.Wrapper
 
             JsValueRef obj = JsValueRef.Invalid;
             obj = JsContext.RunScript("({ x: 5 })");
-            JsObject.isSupported(obj.ValueType, obj).Should().BeTrue();
+            JsObject.IsSupported(obj.ValueType, obj).Should().BeTrue();
         }
 
         [Fact]
@@ -33,7 +33,7 @@ namespace CCore.Net.Wrapper
 
             var obj = JsContext.RunScript("({ x: 5, [5]: 15 })");
 
-            JsObject.isSupported(obj.ValueType, obj).Should().BeTrue();
+            JsObject.IsSupported(obj.ValueType, obj).Should().BeTrue();
 
             var managedObj = JsTypeMapper.FromRaw(obj);
             managedObj.Should().BeOfType<JsObject>();

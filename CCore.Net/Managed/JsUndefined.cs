@@ -7,7 +7,7 @@ namespace CCore.Net.Managed
 {
     public class JsUndefined : JsValue
     {
-        public static new bool isSupported(JsValueType type, JsValueRef value) => type == JsValueType.Undefined;
+        public static new bool IsSupported(JsValueType type, JsValueRef value) => type == JsValueType.Undefined;
 
         public static JsUndefined Undefined => new JsUndefined(JsValueRef.Undefined);
 
@@ -15,7 +15,7 @@ namespace CCore.Net.Managed
         {
             if (!jsValue.IsValid)
                 throw new Exception("Invalid value");
-            if (!isSupported(jsValue.ValueType, jsValue))
+            if (!IsSupported(jsValue.ValueType, jsValue))
                 throw new Exception("Unsupported type.");
 
             jsValueRef = jsValue;

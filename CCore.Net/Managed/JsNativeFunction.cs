@@ -15,7 +15,7 @@ namespace CCore.Net.Managed
         protected GCHandle callDelegateHandle;
         protected GCHandle finalizeCallbackHandle;
         protected GCHandle selfHandle;
-        public bool IsFreeed { get; protected set; } = false;
+        public bool IsFreed { get; protected set; } = false;
 
         protected JsNativeFunction() : base() { }
 
@@ -57,12 +57,12 @@ namespace CCore.Net.Managed
 
         protected void OnJsFinalize()
         {
-            if (!IsFreeed)
+            if (!IsFreed)
             {
                 callDelegateHandle.Free();
                 finalizeCallbackHandle.Free();
                 selfHandle.Free();
-                IsFreeed = true;
+                IsFreed = true;
             }
         }
 

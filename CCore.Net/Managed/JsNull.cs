@@ -7,7 +7,7 @@ namespace CCore.Net.Managed
 {
     public class JsNull : JsValue
     {
-        public static new bool isSupported(JsValueType type, JsValueRef value) => type == JsValueType.Null;
+        public static new bool IsSupported(JsValueType type, JsValueRef value) => type == JsValueType.Null;
 
         public static JsNull Null => new JsNull(JsValueRef.Null);
 
@@ -15,7 +15,7 @@ namespace CCore.Net.Managed
         {
             if (!jsValue.IsValid)
                 throw new Exception("Invalid value");
-            if (!isSupported(jsValue.ValueType, jsValue))
+            if (!IsSupported(jsValue.ValueType, jsValue))
                 throw new Exception("Unsupported type.");
 
             jsValueRef = jsValue;

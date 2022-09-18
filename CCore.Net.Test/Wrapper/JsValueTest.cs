@@ -36,7 +36,7 @@ namespace CCore.Net.Test.Wrapper
         [Fact]
         public void Supports()
         {
-            JsValue.isSupported(JsValueType.Undefined, JsValueRef.Invalid).Should().BeFalse();
+            JsValue.IsSupported(JsValueType.Undefined, JsValueRef.Invalid).Should().BeFalse();
         }
 
         /*

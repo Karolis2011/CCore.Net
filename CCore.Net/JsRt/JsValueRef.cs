@@ -862,7 +862,7 @@ namespace CCore.Net.JsRt
         /// </remarks>
         /// <param name="arguments">The arguments to the call. First argument is this. Same as in js function `call()`</param>
         /// <returns>The <c>Value</c> returned from the function invocation, if any.</returns>
-        public JsValueRef CallFunction(params JsValueRef[] arguments)
+        internal JsValueRef CallFunction(params JsValueRef[] arguments)
         {
 
             if (arguments.Length > ushort.MaxValue)
@@ -872,6 +872,23 @@ namespace CCore.Net.JsRt
 
             Native.ThrowIfError(Native.JsCallFunction(this, arguments, (ushort)arguments.Length, out JsValueRef returnReference));
             return returnReference;
+        }
+        
+        /// <summary>
+        ///     Invokes a function.
+        /// </summary>
+        /// <remarks>
+        ///     Requires an active script context.
+        /// </remarks>
+        /// <param name="thisArg"><c>this</c> function arg</param>
+        /// <param name="arguments">Regular arguments to function</param>
+        /// <returns>The <c>Value</c> returned from the function invocation, if any.</returns>
+        public JsValueRef CallFunction(JsValueRef thisArg, params JsValueRef[] arguments)
+        {
+            var args = new JsValueRef[arguments.Length+ 1];
+            arguments.CopyTo(args, 1);
+            args[0] = thisArg;
+            return CallFunction(args);
         }
 
         /// <summary>

@@ -6,6 +6,6 @@ namespace CCore.Net.Managed
 {
     public interface IJsFreeable
     {
-        bool IsFreeed { get; }
+        bool IsFreed { get; }
     }
 }

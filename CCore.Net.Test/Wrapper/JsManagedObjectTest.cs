@@ -119,7 +119,7 @@ namespace CCore.Net.Test.Wrapper
             fixture.Runtime.InternalRuntime.CollectGarbage();
             fixture.Runtime.InternalRuntime.CollectGarbage();
 
-            mObj.IsFreeed.Should().BeTrue();
+            mObj.IsFreed.Should().BeTrue();
         }
     }
 }

@@ -7,7 +7,7 @@ namespace CCore.Net.Managed
 {
     public class JsBool : JsValue
     {
-        public static new bool isSupported(JsValueType type, JsValueRef value) => type == JsValueType.Boolean;
+        public static new bool IsSupported(JsValueType type, JsValueRef value) => type == JsValueType.Boolean;
 
         public static JsBool True => new JsBool(JsValueRef.True);
         public static JsBool False => new JsBool(JsValueRef.False);
@@ -20,7 +20,7 @@ namespace CCore.Net.Managed
         {
             if (!jsValue.IsValid)
                 throw new Exception("Invalid value");
-            if (!isSupported(jsValue.ValueType, jsValue))
+            if (!IsSupported(jsValue.ValueType, jsValue))
                 throw new Exception("Unsupported type.");
 
             jsValueRef = jsValue;

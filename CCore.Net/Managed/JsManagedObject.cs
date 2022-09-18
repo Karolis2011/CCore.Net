@@ -14,7 +14,7 @@ namespace CCore.Net.Managed
     {
         public object Target { get; private set; }
         protected JsFinalizeCallback finalizeCallback;
-        public bool IsFreeed { get; protected set; } = false;
+        public bool IsFreed { get; protected set; } = false;
 
         protected GCHandle finalizeCallbackHandle;
         protected GCHandle selfHandle;
@@ -34,9 +34,7 @@ namespace CCore.Net.Managed
 
         internal JsManagedObject(object obj, MappingValidator validator = null) : base()
         {
-            if(obj == null)
-                throw new ArgumentNullException(nameof(obj));
-            Target = obj;
+            Target = obj ?? throw new ArgumentNullException(nameof(obj));
             finalizeCallback = (ptr) =>
                 OnJsFinalize();
             finalizeCallbackHandle = GCHandle.Alloc(finalizeCallback);
@@ -233,11 +231,11 @@ namespace CCore.Net.Managed
 
         protected void OnJsFinalize()
         {
-            if (!IsFreeed)
+            if (!IsFreed)
             {
                 finalizeCallbackHandle.Free();
                 selfHandle.Free();
-                IsFreeed = true;
+                IsFreed = true;
             }
         }
     }

@@ -7,13 +7,13 @@ namespace CCore.Net.Managed
 {
     public class JsError : JsObject
     {
-        public static new bool isSupported(JsValueType type, JsValueRef value) => type == JsValueType.Error;
+        public static new bool IsSupported(JsValueType type, JsValueRef value) => type == JsValueType.Error;
 
         public JsError(JsValueRef jsValue)
         {
             if (!jsValue.IsValid)
                 throw new Exception("Invalid value");
-            if (!isSupported(jsValue.ValueType, jsValue))
+            if (!IsSupported(jsValue.ValueType, jsValue))
                 throw new Exception("Unsupported type.");
 
             jsValueRef = jsValue;

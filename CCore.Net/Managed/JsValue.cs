@@ -14,7 +14,7 @@ namespace CCore.Net.Managed
 
         private bool disposedValue;
 
-        public static bool isSupported(JsValueType type, JsValueRef value) => value.IsValid;
+        public static bool IsSupported(JsValueType type, JsValueRef value) => value.IsValid;
 
         protected JsValue()
         {

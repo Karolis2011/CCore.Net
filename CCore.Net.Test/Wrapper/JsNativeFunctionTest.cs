@@ -57,7 +57,7 @@ namespace CCore.Net.Test.Wrapper
             fixture.Runtime.InternalRuntime.CollectGarbage();
             fixture.Runtime.InternalRuntime.CollectGarbage();
 
-            function.IsFreeed.Should().BeTrue();
+            function.IsFreed.Should().BeTrue();
         }
 
         [Fact]

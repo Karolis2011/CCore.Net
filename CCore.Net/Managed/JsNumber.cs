@@ -5,7 +5,7 @@ namespace CCore.Net.Managed
 {
     public class JsNumber : JsValue
     {
-        public static new bool isSupported(JsValueType type, JsValueRef value) => type == JsValueType.Number;
+        public static new bool IsSupported(JsValueType type, JsValueRef value) => type == JsValueType.Number;
 
         public static JsValueRef FromNumber(object value)
         {
@@ -41,7 +41,7 @@ namespace CCore.Net.Managed
         {
             if (!jsValue.IsValid)
                 throw new Exception("Invalid value");
-            if (!isSupported(jsValue.ValueType, jsValue))
+            if (!IsSupported(jsValue.ValueType, jsValue))
                 throw new Exception("Unsupported type.");
 
             jsValueRef = jsValue;

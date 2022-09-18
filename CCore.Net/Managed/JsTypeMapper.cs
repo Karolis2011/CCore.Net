@@ -10,8 +10,8 @@ namespace CCore.Net.Managed
 {
     public static class JsTypeMapper
     {
-        public static bool MapObjectsAutomaticly { get; set; } = false;
-        public static bool MapTypesAutomaticly { get; set; } = false;
+        public static bool MapObjectsAutomatically { get; set; } = false;
+        public static bool MapTypesAutomatically { get; set; } = false;
         public static MappingValidator MappingValidator { get; set; } = new MaxMappingValidator();
 
         public static JsValueRef ToScript(object obj)
@@ -44,7 +44,7 @@ namespace CCore.Net.Managed
                 return JsManagedFunction.ObtainUsingDelegate(@delegate);
 
 
-            if (MapObjectsAutomaticly)
+            if (MapObjectsAutomatically)
                 return JsManagedObject.Obtain(obj, MappingValidator);
 
 
@@ -61,19 +61,19 @@ namespace CCore.Net.Managed
             if (jsValue.Equals(JsValueRef.Null))
                 return null;
 
-            if (expectedType == typeof(string) && JsString.isSupported(actualType, jsValue))
+            if (expectedType == typeof(string) && JsString.IsSupported(actualType, jsValue))
                 return (string)new JsString(jsValue); 
-            if (expectedType == typeof(int) && JsNumber.isSupported(actualType, jsValue))
+            if (expectedType == typeof(int) && JsNumber.IsSupported(actualType, jsValue))
                 return (int)new JsNumber(jsValue);
-            if (expectedType == typeof(long) && JsNumber.isSupported(actualType, jsValue))
+            if (expectedType == typeof(long) && JsNumber.IsSupported(actualType, jsValue))
                 return (long)new JsNumber(jsValue);
-            if (expectedType == typeof(float) && JsNumber.isSupported(actualType, jsValue))
+            if (expectedType == typeof(float) && JsNumber.IsSupported(actualType, jsValue))
                 return (float)new JsNumber(jsValue);
-            if (expectedType == typeof(decimal) && JsNumber.isSupported(actualType, jsValue))
+            if (expectedType == typeof(decimal) && JsNumber.IsSupported(actualType, jsValue))
                 return (decimal)new JsNumber(jsValue);
-            if (expectedType == typeof(double) && JsNumber.isSupported(actualType, jsValue))
+            if (expectedType == typeof(double) && JsNumber.IsSupported(actualType, jsValue))
                 return (double)new JsNumber(jsValue);
-            if (expectedType == typeof(bool) && JsBool.isSupported(actualType, jsValue))
+            if (expectedType == typeof(bool) && JsBool.IsSupported(actualType, jsValue))
                 return (bool)new JsBool(jsValue);
 
             var value = FromRaw(jsValue);
