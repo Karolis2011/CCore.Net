@@ -6,6 +6,9 @@ using System.Runtime.CompilerServices;
 
 namespace CCore.Net.Runtimes
 {
+    /// <summary>
+    /// Basic runtime without event loop.
+    /// </summary>
     public class BasicJsRuntime : IDisposable, IJsRuntime
     {
         protected bool disposedValue;

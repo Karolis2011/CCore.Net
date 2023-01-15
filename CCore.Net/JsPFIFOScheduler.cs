@@ -32,20 +32,18 @@ namespace CCore.Net
 
         private JsTask FirstToExecute(LinkedList<JsTask> tasks)
         {
-            LinkedListNode<JsTask> lowest = tasks.First;
-            if (lowest == null)
-                return null;
-            if(tasks.Last == lowest)
-            {
-                tasks.RemoveFirst();
-                return lowest.Value;
-            }
+            if (tasks == null)
+                throw new ArgumentNullException(nameof(tasks));
+            LinkedListNode<JsTask> lowest = null;
+            if (tasks.Count == 0)
+                return default;
             for (var node = tasks.First; node != null; node = node.Next)
-                if (lowest != null && lowest.Value.Priority > node.Value.Priority)
+            {
+                if (lowest == null || lowest.Value.Priority > node.Value.Priority)
                     lowest = node;
+            }
             var value = lowest?.Value;
-            if (lowest != null)
-                tasks.Remove(lowest);
+            tasks.Remove(lowest);
             return value;
         }
 

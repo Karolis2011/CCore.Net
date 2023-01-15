@@ -16,9 +16,9 @@ namespace CCore.Net.Managed
         public JsObject(JsValueRef jsValue)
         {
             if (!jsValue.IsValid)
-                throw new Exception("Indalid value");
+                throw new ArgumentException("Invalid value");
             if (!IsSupported(jsValue.ValueType, jsValue))
-                throw new Exception("Unsupported type");
+                throw new ArgumentException("Unsupported type");
             jsValueRef = jsValue;
         }
 

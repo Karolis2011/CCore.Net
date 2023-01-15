@@ -39,30 +39,63 @@ namespace CCore.Net.Test.Scheduling
         [Fact]
         public void PriorityAndOrder()
         {
+            // Initialize single thread scheduler
             using var s = new JsPFIFOScheduler();
 
-            // Ocupy thread with some work 
-            var t1 = s.Run(() => { Thread.Sleep(30); outputHelper.WriteLine("T1 has finished."); });
-            var t2 = s.Run(() => { Thread.Sleep(10); outputHelper.WriteLine("T2 has finished."); });
-            Thread.Sleep(1);
-            var t3 = s.Run(() => { Thread.Sleep(10); outputHelper.WriteLine("T3 has finished."); }, JsTaskPriority.INITIALIZATION);
-            var t4 = s.Run(() => { Thread.Sleep(30); outputHelper.WriteLine("T4 has finished."); }, JsTaskPriority.INITIALIZATION);
+            var e1 = new ManualResetEvent(false);
+            var e2 = new ManualResetEvent(false);
+            var e3 = new ManualResetEvent(false);
+            var e4 = new ManualResetEvent(false);
+            var et1 = new ManualResetEvent(false);
+            
+            var counter = 0;
+            
+            // Occupy thread with some work 
+            var t1 = s.Run(() => { et1.Set(); e1.WaitOne(); outputHelper.WriteLine("T1 has finished."); counter++; }).WithName("T1");
+            // Wait for T1 to start before scheduling other tasks. 
+            et1.WaitOne();
+            var t2 = s.Run(() => { e2.WaitOne(); outputHelper.WriteLine("T2 has finished."); counter++; }).WithName("T2");
+            var t3 = s.Run(() => { e3.WaitOne(); outputHelper.WriteLine("T3 has finished."); counter++; }, JsTaskPriority.INITIALIZATION).WithName("T3");
+            var t4 = s.Run(() => { e4.WaitOne(); outputHelper.WriteLine("T4 has finished."); counter++; }, JsTaskPriority.INITIALIZATION).WithName("T4");
 
-            t1.IsCompleted.Should().BeFalse();
-            t2.IsCompleted.Should().BeFalse();
-            t3.IsCompleted.Should().BeFalse();
-            t4.IsCompleted.Should().BeFalse();
+            t1.State.Should().Be(JsTaskState.Running);
+            t2.State.Should().Be(JsTaskState.Pending);
+            t3.State.Should().Be(JsTaskState.Pending);
+            t4.State.Should().Be(JsTaskState.Pending);
+            counter.Should().Be(0);
+            
+            e1.Set();
+            t1.Wait();
+            t1.State.Should().Be(JsTaskState.Complete);
+            t2.State.Should().Be(JsTaskState.Pending);
+            t3.State.Should().Be(JsTaskState.Running);
+            t4.State.Should().Be(JsTaskState.Pending);
+            counter.Should().Be(1);
 
+            e3.Set();
             t3.Wait();
-            t1.IsCompleted.Should().BeTrue();
-            t2.IsCompleted.Should().BeFalse();
-            t3.IsCompleted.Should().BeTrue();
-            t4.IsCompleted.Should().BeFalse();
+            t1.State.Should().Be(JsTaskState.Complete);
+            t2.State.Should().Be(JsTaskState.Pending);
+            t3.State.Should().Be(JsTaskState.Complete);
+            t4.State.Should().Be(JsTaskState.Running);
+            counter.Should().Be(2);
 
+            e4.Set();
+            t4.Wait();
+            t1.State.Should().Be(JsTaskState.Complete);
+            t2.State.Should().Be(JsTaskState.Running);
+            t3.State.Should().Be(JsTaskState.Complete);
+            t4.State.Should().Be(JsTaskState.Complete);
+            counter.Should().Be(3);
+            
+            e2.Set();
             t2.Wait();
-            t2.IsCompleted.Should().BeTrue();
-            t4.IsCompleted.Should().BeTrue();
-
+            t1.State.Should().Be(JsTaskState.Complete);
+            t2.State.Should().Be(JsTaskState.Complete);
+            t3.State.Should().Be(JsTaskState.Complete);
+            t4.State.Should().Be(JsTaskState.Complete);
+            counter.Should().Be(4);
         }
+        
     }
 }

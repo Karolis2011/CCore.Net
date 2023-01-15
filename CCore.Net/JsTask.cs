@@ -47,6 +47,10 @@ namespace CCore.Net
         /// Current state of the task
         /// </summary>
         public JsTaskState State { get; protected set; } = JsTaskState.Initialized;
+        /// <summary>
+        /// Name of task. Used for debugging purposes.
+        /// </summary>
+        public string Name { get; protected set; }
 
         private Action m_action;
         protected JsScheduler assignedScheduler;
@@ -190,6 +194,15 @@ namespace CCore.Net
         /// <param name="timeout">Timeout in ms</param>
         /// <returns>Value determining whenewer it waited till task execution completion or halted waiting.</returns>
         public bool Wait(int timeout) => Wait(new TimeSpan(TimeSpan.TicksPerMillisecond * timeout));
+        
+        /// <summary>
+        /// Sets name for this task.
+        /// </summary>
+        public JsTask WithName(string name)
+        {
+            Name = name;
+            return this;
+        }
 
         public virtual void OnBreak() { }
         public virtual void OnResume() { }
@@ -314,6 +327,15 @@ namespace CCore.Net
         public TResult GetResult()
         {
             return result;
+        }
+        
+        /// <summary>
+        /// Sets name for this task.
+        /// </summary>
+        public new JsTask<TResult> WithName(string name)
+        {
+            Name = name;
+            return this;
         }
 
         public static explicit operator System.Threading.Tasks.Task<TResult>(JsTask<TResult> jsTask) => jsTask.ToTask();

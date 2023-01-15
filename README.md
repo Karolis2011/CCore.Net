@@ -5,7 +5,7 @@ This wrapper was made, because most of wrappers around CC seemed complicated to 
 ## Things left to do for beta
 
 - Type mapping support
-- Module support.
+- Better Module support.
 - Debugging API support.
 
 # Parts of wrapper
@@ -84,4 +84,4 @@ If you use `JsValue.AddRef()` make sure to also then `JsValue.Dispose()`, failur
 I want to mention following projects who have inspired or have somehow contributed to this wrapper.
 
 - https://github.com/Taritsyn/JavaScriptEngineSwitcher - Great obfuscation of engine details to allow just basic things. TypeMapper was great influence on some aspects.
--
+- https://github.com/chakra-core/ChakraCore - Base Javascript engine used in this project

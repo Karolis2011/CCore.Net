@@ -67,6 +67,15 @@ namespace CCore.Net
             base.OnResume();
             timer.Start();
         }
+        
+        /// <summary>
+        /// Sets name for this task.
+        /// </summary>
+        public new JsTaskTimed WithName(string name)
+        {
+            Name = name;
+            return this;
+        }
 
     }
 
@@ -124,6 +133,15 @@ namespace CCore.Net
         {
             base.OnResume();
             timer.Start();
+        }
+        
+        /// <summary>
+        /// Sets name for this task.
+        /// </summary>
+        public new JsTaskTimed<TResult> WithName(string name)
+        {
+            Name = name;
+            return this;
         }
     }
 }

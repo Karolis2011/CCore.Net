@@ -405,9 +405,63 @@ namespace CCore.Net.JsRt
         internal static extern JsErrorCode JsSetHostPromiseRejectionTracker(
            JsHostPromiseRejectionTrackerCallback promiseRejectionTrackerCallback, IntPtr callbackState);
 
+        /// <summary>
+        ///     Parses a script and returns a function representing the script.
+        /// </summary>
+        /// <remarks>
+        ///     <para>
+        ///         Requires an active script context.
+        ///     </para>
+        ///     <para>
+        ///         Script source can be either JavascriptString or JavascriptExternalArrayBuffer.
+        ///         In case it is an ExternalArrayBuffer, and the encoding of the buffer is Utf16,
+        ///         JsParseScriptAttributeArrayBufferIsUtf16Encoded is expected on parseAttributes.
+        ///     </para>
+        ///     <para>
+        ///         Use JavascriptExternalArrayBuffer with Utf8/ASCII script source
+        ///         for better performance and smaller memory footprint.
+        ///     </para>
+        /// </remarks>
+        /// <param name="script">The script to run.</param>
+        /// <param name="sourceContext">
+        ///     A cookie identifying the script that can be used by debuggable script contexts.
+        /// </param>
+        /// <param name="sourceUrl">The location the script came from.</param>
+        /// <param name="parseAttributes">Attribute mask for parsing the script</param>
+        /// <param name="result">The result of the compiled script.</param>
+        /// <returns>
+        ///     The code <c>JsNoError</c> if the operation succeeded, a failure code otherwise.
+        /// </returns>
         [DllImport(DllName)]
         internal static extern JsErrorCode JsParse(JsValueRef script, JsSourceContext sourceContext, JsValueRef sourceUrl, JsParseScriptAttributes parseAttributes, out JsValueRef result);
-
+    
+        /// <summary>
+        ///     Executes a script.
+        /// </summary>
+        /// <remarks>
+        ///     <para>
+        ///         Requires an active script context.
+        ///     </para>
+        ///     <para>
+        ///         Script source can be either JavascriptString or JavascriptExternalArrayBuffer.
+        ///         In case it is an ExternalArrayBuffer, and the encoding of the buffer is Utf16,
+        ///         JsParseScriptAttributeArrayBufferIsUtf16Encoded is expected on parseAttributes.
+        ///     </para>
+        ///     <para>
+        ///         Use JavascriptExternalArrayBuffer with Utf8/ASCII script source
+        ///         for better performance and smaller memory footprint.
+        ///     </para>
+        /// </remarks>
+        /// <param name="script">The script to run.</param>
+        /// <param name="sourceContext">
+        ///     A cookie identifying the script that can be used by debuggable script contexts.
+        /// </param>
+        /// <param name="sourceUrl">The location the script came from</param>
+        /// <param name="parseAttributes">Attribute mask for parsing the script</param>
+        /// <param name="result">The result of the script, if any. This parameter can be null.</param>
+        /// <returns>
+        ///     The code <c>JsNoError</c> if the operation succeeded, a failure code otherwise.
+        /// </returns>
         [DllImport(DllName)]
         internal static extern JsErrorCode JsRun(JsValueRef script, JsSourceContext sourceContext, JsValueRef sourceUrl, JsParseScriptAttributes parseAttributes, out JsValueRef result);
 
@@ -763,6 +817,132 @@ namespace CCore.Net.JsRt
 
         // TODO:
         // https://github.com/Microsoft/ChakraCore/issues/4324
+
+
+
+        /// <summary>
+        ///     Initialize a ModuleRecord from host
+        /// </summary>
+        /// <remarks>
+        ///     Bootstrap the module loading process by creating a new module record.
+        /// </remarks>
+        /// <param name="referencingModule">Unused parameter - exists for backwards compatability, supply nullptr</param>
+        /// <param name="normalizedSpecifier">The normalized specifier or url for the module - used in script errors, optional.</param>
+        /// <param name="module">The new module record.</param>
+        /// <returns>
+        ///     The code <c>JsNoError</c> if the operation succeeded, a failure code otherwise.
+        /// </returns>
+        [DllImport(DllName)]
+        internal static extern JsErrorCode JsInitializeModuleRecord(JsModule referencingModule, JsValueRef normalizedSpecifier, out JsModule module);
+
+        /// <summary>
+        ///     Parse the source for an ES module
+        /// </summary>
+        /// <remarks>
+        ///     This is basically ParseModule operation in ES6 spec. It is slightly different in that:
+        ///     a) The ModuleRecord was initialized earlier, and passed in as an argument.
+        ///     b) This includes a check to see if the module being Parsed is the last module in the
+        /// dependency tree. If it is it automatically triggers Module Instantiation.
+        /// </remarks>
+        /// <param name="requestModule">The ModuleRecord being parsed.</param>
+        /// <param name="sourceContext">A cookie identifying the script that can be used by debuggable script contexts.</param>
+        /// <param name="script">The source script to be parsed, but not executed in this code.</param>
+        /// <param name="scriptLength">The length of sourceText in bytes. As the input might contain a embedded null.</param>
+        /// <param name="sourceFlag">The type of the source code passed in. It could be utf16 or utf8 at this time.</param>
+        /// <param name="exceptionValueRef">The error object if there is parse error.</param>
+        /// <returns>
+        ///     The code <c>JsNoError</c> if the operation succeeded, a failure code otherwise.
+        /// </returns>
+        [DllImport(DllName)]
+        internal static extern JsErrorCode JsParseModuleSource(JsModule requestModule, JsSourceContext sourceContext, byte[] script, uint scriptLength, JsParseModuleSourceFlags sourceFlag, out JsValueRef exceptionValueRef);
+
+
+        /// <summary>
+        ///     Execute module code.
+        /// </summary>
+        /// <remarks>
+        ///     This method implements 15.2.1.1.6.5, "ModuleEvaluation" concrete method.
+        ///     This method should be called after the engine notifies the host that the module is ready.
+        ///     This method only needs to be called on root modules - it will execute all of the dependent modules.
+        ///
+        ///     One moduleRecord will be executed only once. Additional execution call on the same moduleRecord will fail.
+        /// </remarks>
+        /// <param name="requestModule">The ModuleRecord being executed.</param>
+        /// <param name="result">The return value of the module.</param>
+        /// <returns>
+        ///     The code <c>JsNoError</c> if the operation succeeded, a failure code otherwise.
+        /// </returns>
+        [DllImport(DllName)]
+        internal static extern JsErrorCode JsModuleEvaluation(JsModule requestModule, out JsValueRef result);
+
+        /// <summary>
+        ///     Set host info for the specified module.
+        /// </summary>
+        /// <remarks>
+        ///     This is used for four things:
+        ///     1. Setting up the callbacks for module loading - note these are actually
+        ///         set on the module's Context not the module itself so only have to be set
+        ///         for the first root module in any given context.
+        ///         Alternatively you can set these on the currentContext by supplying a nullptr
+        ///         as the requestModule
+        ///     2. Setting host defined info on a module record - can be anything that
+        ///         you wish to associate with your modules.
+        ///     3. Setting a URL for a module to be used for stack traces/debugging -
+        ///         note this must be set before calling JsParseModuleSource on the module
+        ///         or it will be ignored.
+        ///     4. Setting an exception on the module object - only relevant prior to it being Parsed.
+        /// </remarks>
+        /// <param name="requestModule">The request module, optional for setting callbacks, required for other uses.</param>
+        /// <param name="moduleHostInfo">The type of host info to be set.</param>
+        /// <param name="hostInfo">The host info to be set.</param>
+        /// <returns>
+        ///     The code <c>JsNoError</c> if the operation succeeded, a failure code otherwise.
+        /// </returns>
+        [DllImport(DllName)]
+        internal static extern JsErrorCode JsSetModuleHostInfo(JsModule requestModule, JsModuleHostInfoKind moduleHostInfo, IntPtr hostInfo);
+
+        [DllImport(DllName)]
+        internal static extern JsErrorCode JsSetModuleHostInfo(JsModule requestModule, JsModuleHostInfoKind moduleHostInfo, JsFetchImportedModuleCallBack hostInfo);
+        [DllImport(DllName)]
+        internal static extern JsErrorCode JsSetModuleHostInfo(JsModule requestModule, JsModuleHostInfoKind moduleHostInfo, JsFetchImportedModuleFromScriptCallBack hostInfo);
+        [DllImport(DllName)]
+        internal static extern JsErrorCode JsSetModuleHostInfo(JsModule requestModule, JsModuleHostInfoKind moduleHostInfo, JsNotifyModuleReadyCallback hostInfo);
+        [DllImport(DllName)]
+        internal static extern JsErrorCode JsSetModuleHostInfo(JsModule requestModule, JsModuleHostInfoKind moduleHostInfo, JsInitializeImportMetaCallback hostInfo);
+        [DllImport(DllName)]
+        internal static extern JsErrorCode JsSetModuleHostInfo(JsModule requestModule, JsModuleHostInfoKind moduleHostInfo, JsReportModuleCompletionCallback hostInfo);
+        [DllImport(DllName)]
+        internal static extern JsErrorCode JsSetModuleHostInfo(JsModule requestModule, JsModuleHostInfoKind moduleHostInfo, JsValueRef hostInfo);
+
+        /// <summary>
+        ///     Retrieve the host info for the specified module.
+        /// </summary>
+        /// <remarks>
+        ///     This can used to retrieve info previously set with JsSetModuleHostInfo.
+        /// </remarks>
+        /// <param name="requestModule">The request module.</param>
+        /// <param name="moduleHostInfo">The type of host info to be retrieved.</param>
+        /// <param name="hostInfo">The retrieved host info for the module.</param>
+        /// <returns>
+        ///     The code <c>JsNoError</c> if the operation succeeded, a failure code otherwise.
+        /// </returns>
+        [DllImport(DllName)]
+        internal static extern JsErrorCode JsGetModuleHostInfo(JsModule requestModule, JsModuleHostInfoKind moduleHostInfo, out IntPtr hostInfo);
+
+        [DllImport(DllName)]
+        internal static extern JsErrorCode JsGetModuleHostInfo(JsModule requestModule, JsModuleHostInfoKind moduleHostInfo, out JsFetchImportedModuleCallBack hostInfo);
+        [DllImport(DllName)]
+        internal static extern JsErrorCode JsGetModuleHostInfo(JsModule requestModule, JsModuleHostInfoKind moduleHostInfo, out JsFetchImportedModuleFromScriptCallBack hostInfo);
+        [DllImport(DllName)]
+        internal static extern JsErrorCode JsGetModuleHostInfo(JsModule requestModule, JsModuleHostInfoKind moduleHostInfo, out JsNotifyModuleReadyCallback hostInfo);
+        [DllImport(DllName)]
+        internal static extern JsErrorCode JsGetModuleHostInfo(JsModule requestModule, JsModuleHostInfoKind moduleHostInfo, out JsInitializeImportMetaCallback hostInfo);
+        [DllImport(DllName)]
+        internal static extern JsErrorCode JsGetModuleHostInfo(JsModule requestModule, JsModuleHostInfoKind moduleHostInfo, out JsReportModuleCompletionCallback hostInfo);
+        [DllImport(DllName)]
+        internal static extern JsErrorCode JsGetModuleHostInfo(JsModule requestModule, JsModuleHostInfoKind moduleHostInfo, out JsValueRef hostInfo);
+
+        
     }
 
 }

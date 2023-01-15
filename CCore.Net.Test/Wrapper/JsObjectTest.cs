@@ -1,4 +1,5 @@
-﻿using CCore.Net.JsRt;
+﻿using System;
+using CCore.Net.JsRt;
 using CCore.Net.Managed;
 using Xunit;
 using FluentAssertions;
@@ -46,6 +47,26 @@ namespace CCore.Net.Wrapper
             var five = (JsValue)managedObject[x];
             five.Should().BeOfType<JsNumber>();
             ((int)(JsNumber)five).Should().Be(15);
+
+            var five2 = (JsValue)managedObject[5];
+            five.Should().BeOfType<JsNumber>();
+            ((int)(JsNumber)five).Should().Be(15);
+        }
+        
+        [Fact]
+        public void Constructor()
+        {
+            using var s = new BasicJsRuntime.Scope(fixture.Runtime);
+
+            var invalid = () => new JsObject(JsValueRef.Invalid);
+            invalid.Should().Throw<ArgumentException>().WithMessage("Invalid value");
+            
+            var unsupported = () => new JsObject(JsValueRef.Null);
+            unsupported.Should().Throw<ArgumentException>().WithMessage("Unsupported type");
+            
+            var obj = JsContext.RunScript("({ x: 5 })");
+            var managedObj = () => new JsObject(obj);
+            managedObj.Should().NotThrow().Subject.Should().NotBeNull();
         }
     }
 }
